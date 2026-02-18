@@ -1,0 +1,9 @@
+{
+  "name": "slashnote",
+  "description": "SlashNote developer companion — quick capture, task loops, standups, and session management via sticky notes",
+  "version": "1.0.0",
+  "author": {
+    "name": "SlashNote"
+  },
+  "skills": "./skills/"
+}

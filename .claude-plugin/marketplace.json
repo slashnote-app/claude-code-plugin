@@ -1,0 +1,9 @@
+{
+  "plugins": {
+    "slashnote": {
+      "name": "slashnote",
+      "description": "SlashNote developer companion — quick capture, task loops, standups via sticky notes",
+      "path": "."
+    }
+  }
+}
