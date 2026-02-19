@@ -74,15 +74,6 @@ Set your current focus or start an automated task execution loop.
 ```
 
 - Color: **green**, Pinned: **true**
-- Add progress chart at the end:
-  ```
-  chart_type: "progress"
-  data_points: [
-    {"label": "Done", "value": 0, "color": "green"},
-    {"label": "Remaining", "value": <total_tasks>, "color": "gray"}
-  ]
-  title: "Progress"
-  ```
 
 ### Step 2: Create state file + start
 
@@ -138,7 +129,7 @@ The Stop hook (`hooks/stop-loop.sh`) handles continuation:
 - Claude finishes task → tries to stop → hook checks state file
 - Tasks remain → hook blocks exit, returns next task instruction
 - Claude picks up next task automatically
-- Progress chart updated by hook via HTTP bridge
+- Progress updated by hook via HTTP bridge
 
 ### Blocked Task Handling
 
@@ -180,7 +171,7 @@ When a task cannot be completed:
 ```
 /focus Write tests, Implement feature, Update docs --loop
 ```
-→ Green pinned note + progress chart, loop starts
+→ Green pinned note, loop starts
 
 **Loop from existing note:**
 ```
