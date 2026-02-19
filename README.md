@@ -2,7 +2,7 @@
 
 > Your coding companion: capture ideas, track tasks, run standups — all from the terminal.
 
-SlashNote plugin adds 8 slash commands and 4 automatic hooks to Claude Code, turning [SlashNote](https://slashnote.app) sticky notes into your developer dashboard.
+SlashNote plugin adds 12 slash commands and 4 automatic hooks to Claude Code, turning [SlashNote](https://slashnote.app) sticky notes into your developer dashboard.
 
 ```
 You: /note fix the auth token refresh before release
@@ -30,16 +30,20 @@ Then add `"slashnote@local": true` to `~/.claude/settings.json` under `enabledPl
 
 ## What It Does
 
-| Command | Category | What it creates |
-|---------|----------|-----------------|
-| `/note <text>` | Capture | Auto-typed sticky note (yellow/pink/blue/purple) |
-| `/bugs <desc>` | Capture | Structured bug report with git context |
-| `/snippet <code>` | Capture | Syntax-highlighted code snippet |
-| `/focus <tasks>` | Workflow | Pinned focus note, optional auto-execute loop |
-| `/pause` | Workflow | Pause, skip, or stop task loop |
-| `/standup` | Reporting | Daily standup from git + notes |
-| `/wrapup` | Reporting | Session summary with handoff notes |
-| `/decisions <desc>` | Reporting | Architectural decision record (ADR-lite) |
+| Command | Category | Color | What it creates |
+|---------|----------|-------|-----------------|
+| `/note <text>` | Capture | auto | Auto-typed sticky note (confidence scoring) |
+| `/todo <tasks>` | Capture | peach | Task list with priorities and deadlines |
+| `/bug <desc>` | Capture | pink | Structured bug report with severity + git context |
+| `/meeting <notes>` | Capture | blue | Meeting notes with decisions + action items |
+| `/snippet <code>` | Capture | purple | Code snippet with language detection |
+| `/decide <desc>` | Capture | green | Architectural decision record (Y-statement ADR) |
+| `/focus <tasks>` | Workflow | green | Pinned focus note, optional auto-execute loop |
+| `/pause` | Workflow | — | Pause, skip, or stop task loop |
+| `/find <query>` | Workflow | — | Search across all notes with ranking |
+| `/standup` | Reporting | green | Daily standup from git + notes + PRs |
+| `/wrapup` | Reporting | green | Session summary with handoff notes |
+| `/context` | Reporting | blue | Context snapshot for session continuity |
 
 ## Skills Reference
 
@@ -47,60 +51,134 @@ Then add `"slashnote@local": true` to `~/.claude/settings.json` under `enabledPl
 
 #### `/note <text>`
 
-Quick capture — creates a sticky note with auto-detected type and color.
+Quick capture — creates a sticky note with auto-detected type and color using confidence scoring (minimum 2 points to trigger a category).
 
 ```
 /note remember to update the API docs
 /note - [ ] deploy staging - [ ] run smoke tests - [ ] merge to main
 /note bug: login fails on Safari when cookies disabled
-/note what if we used WebSockets instead of polling?
+/note met with the team, decided to use JWT for auth
+/note https://react.dev/learn — good tutorial
 ```
 
-**Auto-detection rules** (first match wins):
+**Auto-detection** (confidence scoring, highest score wins):
 
-| Pattern | Color | Format |
-|---------|-------|--------|
-| Checklist items (`- [ ]`, `- `, `1.`) | Peach | Checkboxes |
-| Bug/error keywords | Pink | `# Bug:` heading |
-| Idea keywords (maybe, what if, explore) | Blue | `# Idea` heading |
-| Code patterns (backticks, `func`, `import`) | Purple | Code block |
-| Everything else | Yellow | Plain text |
+| Category | Color | Signals |
+|----------|-------|---------|
+| Todo | Peach | Checkboxes, bullet lists, numbered items |
+| Bug | Pink | crash, error, broken, fails + context |
+| Meeting | Blue | met, discussed, agreed, standup |
+| Snippet | Purple | Code patterns, backticks, `func`, `import` |
+| Link | Blue | URLs (3 points — instant trigger) |
+| Idea | Blue | maybe, what if, explore, consider |
+| General | Yellow | Default when no category reaches 2 points |
+
+Notes longer than 20 words get an auto-generated title.
 
 ---
 
-#### `/bugs <description>`
+#### `/todo <tasks>`
 
-Structured bug report with git branch context.
+Smart task list with priority detection and time markers.
 
 ```
-/bugs login page crashes when password field is empty
-/bugs API returns 500 on malformed JSON payload in /users endpoint
+/todo Write tests, Update API docs, Deploy staging
+/todo !Fix production crash ASAP
+/todo !!Critical security patch needed today
+/todo --append Add one more task to the latest list
 ```
 
-Creates a **pink** note with:
-- Concise title (max 8 words)
-- Summary, git branch, date
-- Steps to Reproduce / Expected / Actual
-- Uses smart placeholders when detail is insufficient
+| Feature | Syntax |
+|---------|--------|
+| Priority High | `!` prefix |
+| Priority Critical | `!!` prefix |
+| Time markers | `today`, `tomorrow`, `this week` — detected and shown |
+| Append mode | `--append` — adds to the most recent peach note |
+
+Creates a **peach** note with checkboxes and auto-generated context-aware title.
 
 ---
 
-#### `/snippet <code or file:lines or description>`
+#### `/bug <description>`
 
-Save a code snippet to a sticky note.
+Structured bug report with severity inference and git context.
+
+```
+/bug Login page crashes when password field is empty
+/bug API returns 500 on malformed JSON — breaks checkout flow
+/bug Wrong color on hover state in dark mode
+```
+
+**Severity auto-detection:**
+
+| Keywords | Severity |
+|----------|----------|
+| crash, fatal, data loss | Critical |
+| broken, fails, blocks, unusable | High |
+| wrong, incorrect, unexpected | Medium |
+| cosmetic, minor, typo | Low |
+
+Creates a **pink** note: Title, Summary, Steps to Reproduce, Expected/Actual, Severity badge, `git diff --stat` context. Works without git too (non-git mode omits branch/diff).
+
+---
+
+#### `/meeting <notes>`
+
+Meeting notes with automatic decision and action item extraction.
+
+```
+/meeting Sync with team: decided to deploy Friday, @Alex update changelog by Wednesday
+/meeting Retro — agreed on 2-week sprints, @Sara owns migration plan, need to explore caching options
+```
+
+**Smart extraction:**
+- **Decisions** detected by: "decided to", "agreed on", "going with", "chose"
+- **Action items** with `@Owner` and deadline extraction from natural language
+- **Key points** — everything else worth noting
+
+Creates a **blue** note: `## Date` heading, Decisions, Action Items (`@Owner: task — deadline`), Key Points.
+
+---
+
+#### `/snippet <code or file:lines>`
+
+Save a code snippet with language detection and optional annotation.
 
 ```
 /snippet src/auth.swift:10-25
 /snippet const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms) } }
-/snippet the rate limiter middleware in server.ts
+/snippet func validate(token: String) -> Bool { ... } -- JWT validation helper
 ```
 
-**Three input modes:**
-1. **File path + lines:** `src/auth.swift:10-25` — reads and saves exact lines
-2. **Inline code:** saves as-is
-3. **Description:** searches codebase, extracts matching code
+**Two modes:**
+1. **File reference:** `path:lines` — reads file, detects language from extension
+2. **Inline code:** paste directly, language detected from syntax (`func` → Swift, `def` → Python, etc.)
 
-Creates a **purple** note with language tag, source path, and date. Max ~50 lines.
+Annotation separator `--` adds a "why I saved this" note below the code.
+
+Creates a **purple** note: auto-generated title, syntax-highlighted code block, `source · date` footer. Max ~50 lines.
+
+---
+
+#### `/decide <description>`
+
+Architectural decision record using Y-statement format.
+
+```
+/decide Use JWT instead of sessions for API authentication
+/decide Chose PostgreSQL over MongoDB for the user service — need relational queries
+```
+
+**Compact format** (default):
+```
+Context → Decision → Why → Over (alternatives) → Means (consequences)
+```
+
+**Extended format** (for complex decisions — auto-detected):
+- Adds **Trade-offs** and **Rejected** sections
+- **Supersedes** chain links to previous related decisions
+
+Creates a **green** note. Checks for duplicate decisions before creating.
 
 ---
 
@@ -126,92 +204,153 @@ Creates/updates a **green pinned** note with your task(s) as checkboxes.
 Starts sequential task execution:
 1. Creates focus note with progress chart
 2. Creates Claude Code tasks for each item
-3. Executes tasks one by one
-4. Updates checkboxes and chart as tasks complete
-5. Blocks session exit until all tasks are done (or you `/pause stop`)
+3. Executes tasks one by one, updating checkboxes in real time
+4. Blocks session exit until all tasks are done (or you `/pause stop`)
 
-**Resume a paused loop:**
+**Resume from existing note:**
 ```
-/focus --loop
+/focus --loop              # Resume from focus note checkboxes
+/focus <note-id> --loop    # Resume from specific note by UUID
 ```
+
+Safety: `max_iterations = max(30, tasks × 3)`. Blocked tasks tracked with reasons.
 
 ---
 
-#### `/pause` / `/pause skip` / `/pause stop`
+#### `/pause` / `/pause after` / `/pause skip` / `/pause stop`
 
 Control the task execution loop.
 
 | Command | Effect |
 |---------|--------|
-| `/pause` | Pause loop — keep progress, resume later with `/focus --loop` |
-| `/pause skip` | Skip current task — marks as blocked, moves to next |
-| `/pause stop` | Stop loop entirely — cancel remaining tasks |
+| `/pause` | Immediate pause — resume later with `/focus --loop` |
+| `/pause after` | Graceful pause — finish current task, then stop |
+| `/pause skip <reason>` | Skip current task with reason, move to next |
+| `/pause stop <reason>` | Stop loop entirely, cancel remaining tasks |
+
+Progress report on every pause: `✓ Done · ⊘ Blocked · → Current (N% complete)`
+
+---
+
+#### `/find <query>`
+
+Search across all notes with relevance ranking.
+
+```
+/find authentication
+/find --type bug
+/find JWT --type decide --pinned
+```
+
+| Flag | Effect |
+|------|--------|
+| `<query>` | Full-text search across note content |
+| `--type <type>` | Filter by type: `todo`, `bug`, `meeting`, `snippet`, `decide` |
+| `--pinned` | Only show pinned notes |
+
+Flags are combinable. Ranking: pinned first → recency → content match.
+
+If nothing found → suggests broadening the query → offers to create a new note.
 
 ---
 
 ### Reporting
 
-#### `/standup` or `/standup --week`
+#### `/standup` or `/standup --week` or `/standup --notes`
 
-Generate a daily standup summary.
+Generate a daily standup summary from git, notes, and PRs. Replaces previous standup note.
 
 ```
-/standup
-/standup --week
+/standup                  # Git + notes since yesterday
+/standup --week           # Weekly summary
+/standup --notes          # Notes-only mode (no git required)
 ```
 
-Collects git commits + note activity and creates a **green** note:
+Creates a **green** note:
 
 ```markdown
-# Standup — Feb 18, 2026
+# Standup Feb 18, 2026
+5 commits, 12 files changed, 2 PRs
 
 ## Done
-- feat: add OAuth2 login flow
-- fix: resolve token refresh race condition
+- Features: OAuth2 login, token refresh
+- PR: "Add voice input" (merged)
+
+## In Progress
+- Skills plugin deep dive (9/12)
 
 ## Today
-- [ ] Deploy staging
-- [ ] Write integration tests
+- Deploy staging
+- Write integration tests
 
 ## Blockers
 - API rate limiting not configured
 ```
 
+Related commits are grouped by conventional commit prefix. Section limits: Done=10, In Progress=7, Today=5, Blockers=5.
+
 ---
 
-#### `/wrapup`
+#### `/wrapup` or `/wrapup --notes`
 
-End-of-session summary with handoff notes for next time.
+End-of-session summary with handoff notes. Replaces previous wrapup note.
 
 ```
 /wrapup
+/wrapup --notes
 /wrapup spent most of the session debugging the WebSocket reconnection
 ```
 
-Creates a **green** note with:
-- **Accomplished:** completed work and merged PRs
-- **Changes:** files/areas modified
-- **In Progress:** uncompleted tasks
-- **Next Session:** exact next steps (file names, function names, what to do)
+Creates a **green** note with cross-reference analysis (git ↔ notes ↔ conversation):
+
+- **Done:** completed work from git commits + note checkboxes
+- **Decisions:** from `/decide` notes created this session
+- **Changed:** files modified (`git diff --stat`, staged + unstaged)
+- **Open:** unfinished tasks, open bugs, uncommitted changes
+- **Risks:** uncommitted changes, blocked tasks, failing tests
+- **Next:** specific next steps with `file:line` references
+
+The "Next" section is the key handoff — each item answers: "What file, what function, what's left?"
 
 ---
 
-#### `/decisions <description>`
+#### `/context`
 
-Log an architectural decision (ADR-lite).
+Save a snapshot of current session state for seamless handoff between Claude Code sessions.
 
 ```
-/decisions use PostgreSQL instead of MongoDB for the user service
-/decisions chose server-side rendering with Next.js for SEO requirements
+/context
+/context also need to check the WebSocket reconnection logic
 ```
 
-Creates a **purple** note with:
-- **Context:** why the decision was needed
-- **Decision:** what was decided
-- **Reasoning:** trade-offs and rationale
-- **Alternatives:** other options considered
+Creates a **blue pinned** note — replaces previous context snapshot:
 
-Checks for duplicates before creating.
+```markdown
+# Context Feb 19, 2026 01:15
+
+**MyProject** @ `feature/auth` | 3 uncommitted changes
+
+## Working On
+Implementing JWT validation in auth middleware
+
+## Key Files
+- `src/auth.swift:45-80` — JWT parsing logic
+- `src/middleware.ts` — auth middleware
+- `tests/auth.test.ts` — new test cases
+
+## State
+- Branch: adding JWT authentication
+- 2 staged, 1 modified, 0 untracked
+- Focus loop: 5/8 tasks done
+
+## Open Questions
+- Should refresh tokens use separate storage?
+
+## Resume With
+Continue editing `src/auth.swift:80` — add token expiry check, then run tests
+```
+
+"Resume With" is the critical section — a fresh session reading only this line should know exactly what to do next.
 
 ---
 
@@ -321,13 +460,17 @@ If you prefer not to use the GitHub marketplace:
    │   └── plugin.json
    ├── skills/
    │   ├── note/SKILL.md
-   │   ├── bugs/SKILL.md
+   │   ├── todo/SKILL.md
+   │   ├── bug/SKILL.md
+   │   ├── meeting/SKILL.md
    │   ├── snippet/SKILL.md
+   │   ├── decide/SKILL.md
    │   ├── focus/SKILL.md
    │   ├── pause/SKILL.md
+   │   ├── find/SKILL.md
    │   ├── standup/SKILL.md
    │   ├── wrapup/SKILL.md
-   │   └── decisions/SKILL.md
+   │   └── context/SKILL.md
    ├── hooks/
    │   ├── hooks.json
    │   ├── session-start.sh
