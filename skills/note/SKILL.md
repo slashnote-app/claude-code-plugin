@@ -9,7 +9,7 @@ allowed-tools:
 
 # /note — Quick Capture
 
-Create a SlashNote sticky note instantly from the user's input.
+Create a SlashNote sticky note instantly from the user's input. Zero friction — one command, one tool call, done.
 
 ## Usage
 
@@ -19,45 +19,134 @@ Create a SlashNote sticky note instantly from the user's input.
 
 ## Auto-Detection Rules
 
-Analyze the user's input and pick the **first matching** rule:
+Analyze the user's input using a **confidence scoring** system. Each signal adds weight — the category with the highest score wins. Minimum 2 points to activate a category; otherwise default to plain note.
 
-| Signal | Color | Tag | Format |
-|--------|-------|-----|--------|
-| Contains `- ` list items or comma-separated tasks or TODO keywords | peach | `todo` emoji or no tag | Convert each item to a checkbox line (`- [ ] Item`) |
-| Contains words: bug, crash, error, fix, broken, issue, regression | pink | `bug` emoji or no tag | Single line: `# Bug: <summary>` then the text as body |
-| Contains words: idea, maybe, could, what if, consider, explore | blue | no tag | `# Idea` heading + the text |
-| Contains code patterns: backticks, `->`, `func `, `def `, `class `, `import ` | purple | no tag | Wrap in code block with detected language |
-| Default (anything else) | yellow | no tag | Plain text, no heading |
+### Checklist (peach) — score 2+ to activate
+
+| Signal | Points |
+|--------|--------|
+| Contains `- ` or `* ` list items (2+ items) | 3 |
+| Contains comma-separated items (3+ items, no verbs/sentences) | 2 |
+| Contains TODO/task keywords: "todo", "task", "checklist", "list" | 2 |
+| Contains action verbs at start of items: "buy", "review", "deploy", "send", "check", "update" | 1 |
+
+**Format:** Convert each item to `- [ ] Item`. If comma-separated, split by commas. No heading needed.
+
+### Bug (pink) — score 2+ to activate
+
+| Signal | Points |
+|--------|--------|
+| Explicit bug words: "bug", "crash", "broken", "regression" | 3 |
+| Error context: "error", "exception", "fails", "not working", "undefined" | 2 |
+| Word "fix" combined with another bug signal | 1 |
+| Word "fix" alone (without other signals) | 0 |
+| Word "issue" with technical context | 1 |
+
+**Format:** `# Bug: <concise title (max 8 words)>` then body text. The word "fix" alone does NOT trigger bug — it's too common in normal usage.
+
+### Idea (blue) — score 2+ to activate
+
+| Signal | Points |
+|--------|--------|
+| Speculative words: "maybe", "what if", "could we", "how about" | 3 |
+| Exploration words: "consider", "explore", "experiment", "try" | 2 |
+| Word "idea" or "concept" | 3 |
+| Question format about approach/design | 1 |
+
+**Format:** `# Idea` heading + the text as body.
+
+### Code (purple) — score 2+ to activate
+
+| Signal | Points |
+|--------|--------|
+| Contains triple backticks | 3 |
+| Contains code keywords: `func `, `def `, `class `, `import `, `const `, `let `, `var ` at word boundary | 2 |
+| Contains code operators: `->`, `=>`, `::`, `\|>` | 2 |
+| Contains file path patterns: `src/`, `.swift`, `.ts`, `.py`, `.rs` | 1 |
+
+**Format:** Wrap in code block with detected language. Add `# Snippet` heading if content is multi-line.
+
+### Link (yellow + bookmark) — score 2+ to activate
+
+| Signal | Points |
+|--------|--------|
+| Contains URL pattern: `http://`, `https://`, `www.` | 3 |
+| Contains domain pattern: `*.com`, `*.io`, `*.dev`, `*.org` | 2 |
+| Contains "link", "url", "site", "page", "article" keywords | 1 |
+
+**Format:** If input is URL-only → `# Bookmark` heading + URL as body. If URL + description → description as title + URL below. Color stays **yellow** but content is formatted.
+
+### Default (yellow) — fallback
+
+When no category reaches 2 points, or input is short (< 5 words):
+- Plain text, no heading, no formatting
+- Color: **yellow**
+
+## Auto-Title
+
+For notes longer than 20 words that don't get a heading from category detection:
+- Generate a concise title (max 6 words) from the content
+- Add as `# <Title>` heading
+- This makes notes scannable in the list view
+
+Short notes (< 20 words) → no auto-title needed.
+
+## Tie-Breaking
+
+If multiple categories score equally:
+1. Checklist > Bug > Idea > Code > Link (priority order)
+2. If still ambiguous, default to yellow plain text
 
 ## Behavior
 
 1. Parse the user's input after `/note `
-2. Apply auto-detection rules above (first match wins)
-3. Call `mcp__slashnote__create_note` with detected color and formatted content
-4. Confirm to the user: "Created [color] note: [first line preview]"
+2. Score each category using signals above
+3. Pick the highest-scoring category (minimum 2 points)
+4. Apply auto-title if needed (long notes without heading)
+5. Call `mcp__slashnote__create_note` with detected color and formatted content
+6. Confirm to the user: "Created [color] note: [first line preview]"
 
 ## Examples
 
 **Input:** `/note Fix race condition in WebSocket handler`
-**Result:** Pink note with `# Bug: Fix race condition in WebSocket handler`
+**Scoring:** Bug gets 0 ("fix" alone = 0 points) → **Yellow** plain text
+
+**Input:** `/note Bug: race condition crashes WebSocket handler`
+**Scoring:** Bug gets 6 → **Pink** bug note
+**Result:** `# Bug: Race condition crashes WebSocket handler`
 
 **Input:** `/note - Buy milk - Review PR - Deploy staging`
-**Result:** Peach note with checkboxes:
-```
-- [ ] Buy milk
-- [ ] Review PR
-- [ ] Deploy staging
-```
+**Scoring:** Checklist gets 4 → **Peach** checklist with 3 checkboxes
+
+**Input:** `/note buy milk, review PR, deploy staging, send email`
+**Scoring:** Checklist gets 3 → **Peach** checklist with 4 checkboxes
 
 **Input:** `/note Use LRU cache for API responses`
-**Result:** Yellow note with plain text
+**Scoring:** No category reaches 2 → **Yellow** plain text
 
-**Input:** `/note Maybe we should try Server-Sent Events instead of WebSockets`
-**Result:** Blue note with `# Idea` heading
+**Input:** `/note Maybe we should try SSE instead of WebSockets`
+**Scoring:** Idea gets 5 → **Blue** idea with `# Idea` heading
+
+**Input:** `/note func validate(token: String) -> Bool`
+**Scoring:** Code gets 4 → **Purple** Swift code block
+
+**Input:** `/note https://github.com/anthropics/claude-code`
+**Scoring:** Link gets 3 → **Yellow** bookmark
+**Result:** `# Bookmark` heading + URL
+
+**Input:** `/note Great article about SwiftUI performance https://swiftui-lab.com/performance`
+**Scoring:** Link gets 3 → **Yellow** with description as title
+**Result:** `# SwiftUI Performance Article` heading + URL below
+
+**Input:** `/note We discussed the migration strategy with the team today. The consensus was to use a phased approach starting with the auth module, then moving to the API layer, and finally the UI components. Timeline is 3 sprints.`
+**Auto-title applied** (>20 words, no category) → **Yellow** with generated title
+**Result:** `# Migration Strategy — Phased Approach` heading + full text
 
 ## Important
 
 - Keep it fast — one tool call, no extra questions
 - Do NOT ask the user for confirmation, color choice, or anything else
-- If input is ambiguous, prefer the simpler format (yellow plain text)
-- Short inputs (< 5 words) → always yellow plain text
+- Confidence scoring happens in your head — do not show scores to the user
+- Short inputs (< 5 words) → always yellow plain text (skip scoring)
+- When in doubt, prefer yellow plain text over a wrong category
+- Zero friction is the #1 goal — never add steps between input and note creation
