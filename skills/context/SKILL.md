@@ -6,7 +6,7 @@ allowed-tools:
   - mcp__slashnote__list_notes
   - mcp__slashnote__read_note
   - mcp__slashnote__search_notes
-  - mcp__slashnote__delete_note
+  - mcp__slashnote__update_note
   - Bash
   - Read
 ---
@@ -24,25 +24,30 @@ Save a snapshot of the current working context to a SlashNote. Designed for pres
 
 ## Behavior
 
-### Step 1: Delete previous context note
+### Step 0: Find existing context to update
 
-Search for existing context notes (`mcp__slashnote__search_notes` with "Context"). Delete the most recent one — only keep the latest snapshot.
+1. `mcp__slashnote__search_notes` with query "Context"
+2. Among results, find one where `preview` starts with "Context" AND `updatedAt` is **less than 3 hours ago**
+3. If found → save its `id` — will use `mcp__slashnote__update_note` in Step 3 instead of creating new
+4. If not found → will create a new note in Step 3
 
-### Step 2: Collect context (one Bash call)
+### Step 1: Collect context (one Bash call)
 
 ```bash
 echo "PROJECT:$(basename $(git rev-parse --show-toplevel 2>/dev/null || pwd))" && echo "BRANCH:$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'no-git')" && echo "---STATUS---" && git status --short 2>/dev/null | head -20 && echo "---LOG---" && git log --oneline -5 2>/dev/null
 ```
 
-### Step 3: Collect SlashNote state
+### Step 2: Collect SlashNote state
 
 1. `mcp__slashnote__list_notes` — overview
 2. Read focus note (if exists) → current tasks
 3. Read loop state file (if exists) → loop progress
 
-### Step 4: Create context note
+### Step 3: Create or update context note
 
 **Blue** note, **pinned**:
+- If Step 0 found an existing context from current session (< 3 hours) → **update** it with `mcp__slashnote__update_note`
+- Otherwise → **create** new with `mcp__slashnote__create_note`
 
 ```markdown
 # Context <timestamp>
@@ -153,6 +158,5 @@ If not in a git repo, skip git calls entirely:
 - "Resume With" is **mandatory** — never skip it
 - "Key Files" helps the next session navigate — always include if files are relevant
 - If user provides additional notes → add as "Notes" section before "Resume With"
-- **Delete** previous context notes (only keep latest)
 - Keep the entire note scannable — this is a quick-reference card, not a detailed log
 - Optimized for LLM compaction — every line has maximum information density

@@ -258,7 +258,7 @@ If nothing found → suggests broadening the query → offers to create a new no
 
 #### `/standup` or `/standup --week` or `/standup --notes`
 
-Generate a daily standup summary from git, notes, and PRs. Replaces previous standup note.
+Generate a daily standup summary from git, notes, and PRs.
 
 ```
 /standup                  # Git + notes since yesterday
@@ -287,13 +287,13 @@ Creates a **green** note:
 - API rate limiting not configured
 ```
 
-Related commits are grouped by conventional commit prefix. Section limits: Done=10, In Progress=7, Today=5, Blockers=5.
+Related commits are grouped by conventional commit prefix. Recommended max items per section: Done=10, In Progress=7, Today=5, Blockers=5.
 
 ---
 
 #### `/wrapup` or `/wrapup --notes`
 
-End-of-session summary with handoff notes. Replaces previous wrapup note.
+End-of-session summary with handoff notes.
 
 ```
 /wrapup
@@ -323,7 +323,7 @@ Save a snapshot of current session state for seamless handoff between Claude Cod
 /context also need to check the WebSocket reconnection logic
 ```
 
-Creates a **blue pinned** note — replaces previous context snapshot:
+Creates a **blue pinned** note:
 
 ```markdown
 # Context Feb 19, 2026 01:15

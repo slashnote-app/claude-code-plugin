@@ -12,7 +12,7 @@ allowed-tools:
 
 # /standup — Daily Standup
 
-Generate a standup report from git commits, SlashNote notes, and PR activity. Replaces previous standup note to keep only the latest.
+Generate a standup report from git commits, SlashNote notes, and PR activity.
 
 ## Usage
 
@@ -24,9 +24,12 @@ Generate a standup report from git commits, SlashNote notes, and PR activity. Re
 
 ## Behavior
 
-### Step 0: Clean up previous standup
+### Step 0: Find existing standup to update
 
-Search for existing standup notes (`mcp__slashnote__search_notes` with "Standup"). If found, the new standup will **replace** the most recent one (via update, not create+delete) to avoid note clutter.
+1. `mcp__slashnote__search_notes` with query "Standup"
+2. Among results, find one where `preview` starts with "Standup" AND `createdAt` is **today's date**
+3. If found → save its `id` — will use `mcp__slashnote__update_note` in Step 2 instead of creating new
+4. If not found → will create a new note in Step 2
 
 ### Step 1: Collect data
 
@@ -47,7 +50,7 @@ For `--week`: use `--since="1 week ago"` and `HEAD~20`
 
 ### Step 2: Generate standup
 
-Create/update a **green** note:
+Create or update a **green** note (update if Step 0 found an existing one for today):
 
 ```markdown
 # Standup <date>
@@ -134,12 +137,11 @@ When git is not available or `--notes` flag used:
 | `chore:`, `ci:` | Maintenance |
 | No prefix | Group by modified area |
 
-Example: 3 commits with `feat:` prefix → single line: "Features: animated AI loader, heading placeholders, notes limit removal"
+Example: 3 commits with `feat:` prefix → single line: "Features: animated AI loader, heading placeholders, voice input"
 
 ## Rules
 
 - **One Bash call** max for git+PR+files data (combined command)
-- **Replace** previous standup note, don't create new ones daily
 - Group related commits — never list individual commits raw
 - Concise: one line per item, no full commit messages
 - Skip merge commits and CI-related commits

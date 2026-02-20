@@ -13,7 +13,7 @@ allowed-tools:
 
 # /wrapup — Session Summary
 
-Generate an end-of-session summary with handoff notes. Replaces previous wrapup to keep only the latest.
+Generate an end-of-session summary with handoff notes.
 
 ## Usage
 
@@ -25,9 +25,12 @@ Generate an end-of-session summary with handoff notes. Replaces previous wrapup 
 
 ## Behavior
 
-### Step 0: Replace previous wrapup
+### Step 0: Find existing wrapup to update
 
-Search for existing wrapup notes (`mcp__slashnote__search_notes` with "Wrapup"). If found, **replace** the most recent one to avoid clutter.
+1. `mcp__slashnote__search_notes` with query "Wrapup"
+2. Among results, find one where `preview` starts with "Wrapup" AND `updatedAt` is **less than 3 hours ago**
+3. If found → save its `id` — will use `mcp__slashnote__update_note` in Step 3 instead of creating new
+4. If not found → will create a new note in Step 3
 
 ### Step 1: Collect data
 
@@ -96,11 +99,12 @@ echo "LOG:" && git log --oneline -10 2>/dev/null && echo "---DIFF---" && git dif
 - <specific next steps based on remaining work>
 ```
 
-### Step 3: Create note
+### Step 3: Create or update note
 
 - Color: **green**
 - Pinned: **false**
-- **Replace** previous wrapup if exists
+- If Step 0 found an existing wrapup from current session (< 3 hours) → **update** it with `mcp__slashnote__update_note`
+- Otherwise → **create** new with `mcp__slashnote__create_note`
 
 ## Section Details
 
@@ -166,7 +170,6 @@ Cross-reference data sources for richer summary:
 ## Rules
 
 - One Bash call max for git data
-- **Replace** previous wrapup note — don't accumulate
 - "Done" = actual work (verifiable from git/notes), not plans
 - "Changed" = actual files from `git diff --stat`
 - "Open" = truly open work, not general TODOs

@@ -57,7 +57,6 @@ Set your current focus or start an automated task execution loop.
 
 - Color: **green**, Pinned: **true**
 - Multiple items (comma-separated or list) → convert each to checkbox
-- One focus note at a time — search and replace
 
 ## Mode B — Auto-Execute Loop (new tasks + `--loop`)
 
