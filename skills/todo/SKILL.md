@@ -7,6 +7,7 @@ allowed-tools:
   - mcp__slashnote__search_notes
   - mcp__slashnote__update_note
   - mcp__slashnote__read_note
+  - mcp__slashnote__reorder_checkboxes
 ---
 
 # /todo — Quick TODO List

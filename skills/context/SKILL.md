@@ -6,6 +6,7 @@ allowed-tools:
   - mcp__slashnote__list_notes
   - mcp__slashnote__read_note
   - mcp__slashnote__search_notes
+  - mcp__slashnote__delete_note
   - Bash
   - Read
 ---

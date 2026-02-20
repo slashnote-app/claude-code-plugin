@@ -6,6 +6,7 @@ allowed-tools:
   - mcp__slashnote__read_note
   - mcp__slashnote__search_notes
   - mcp__slashnote__show_note
+  - mcp__slashnote__get_open_notes
 ---
 
 # /find — Search & Surface
@@ -61,7 +62,7 @@ Search existing SlashNote notes and surface relevant ones.
 /find --type context    # Blue notes with "Context" heading
 ```
 
-1. Call `mcp__slashnote__list_notes` to get all notes
+1. Call `mcp__slashnote__list_notes` with `brief: true` for lighter token usage
 2. Filter by color + content pattern:
 
 | Type | Color | Pattern |
@@ -77,14 +78,16 @@ Search existing SlashNote notes and surface relevant ones.
 
 3. Display matching notes as summary table
 
+**Optimization:** For type-only filters that map to a single color, use `tag` parameter in `list_notes` if a matching tag exists, or filter by color client-side from the brief response.
+
 ### Recent (`--recent`)
 ```
 /find --recent
 /find --recent 5
 ```
 
-1. Call `mcp__slashnote__list_notes`
-2. Sort by `updatedAt` (most recent first)
+1. Call `mcp__slashnote__list_notes` with `limit: N, brief: true`
+2. Notes are returned sorted by `updatedAt` (most recent first)
 3. Show top N notes (default: 5, max: 10)
 
 ### Open (`--open`)
@@ -92,15 +95,15 @@ Search existing SlashNote notes and surface relevant ones.
 /find --open
 ```
 
-1. Call `mcp__slashnote__list_notes`, filter by `isOpen: true`
-2. Show all currently visible notes
+1. Call `mcp__slashnote__get_open_notes` to get all visible notes with window positions and screen info
+2. Show all currently visible notes with their screen positions
 
 ### Pinned (`--pinned`)
 ```
 /find --pinned
 ```
 
-1. Call `mcp__slashnote__list_notes`, filter by `pinned: true`
+1. Call `mcp__slashnote__list_notes` with `pinned: true, brief: true`
 2. Show all pinned notes
 
 ## Output Format
@@ -158,6 +161,7 @@ When search returns no results:
 - Max 10 results per search
 - If no notes at all → "No notes found. Create one with `/note <text>`"
 - Keep output compact — one line per note
-- Do NOT read all notes' full content — use preview/summary from list_notes
+- Do NOT read all notes' full content — use `brief: true` with `list_notes` for minimal token usage
 - Only read full content when showing a specific note
+- Use `list_notes` filtering params: `pinned`, `is_open`, `tag` to narrow results server-side
 - Flags can be combined: `/find auth --type bug --pinned` works

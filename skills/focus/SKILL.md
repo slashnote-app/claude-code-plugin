@@ -9,6 +9,7 @@ allowed-tools:
   - mcp__slashnote__search_notes
   - mcp__slashnote__toggle_checkbox
   - mcp__slashnote__show_note
+  - mcp__slashnote__reorder_checkboxes
   - Bash
   - Read
   - Write

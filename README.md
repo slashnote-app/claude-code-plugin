@@ -202,7 +202,7 @@ Creates/updates a **green pinned** note with your task(s) as checkboxes.
 ```
 
 Starts sequential task execution:
-1. Creates focus note with progress chart
+1. Creates focus note with checkboxes for each task
 2. Creates Claude Code tasks for each item
 3. Executes tasks one by one, updating checkboxes in real time
 4. Blocks session exit until all tasks are done (or you `/pause stop`)
@@ -427,7 +427,7 @@ The `/focus --loop` feature turns Claude Code into an autonomous task executor w
    /focus fix auth bug, add rate limiting, write tests --loop
    ```
 
-2. **Watch progress** on the sticky note — checkboxes update in real time with a progress chart.
+2. **Watch progress** on the sticky note — checkboxes update in real time.
 
 3. **Pause if needed:**
    - `/pause` — pause and resume later
@@ -446,7 +446,7 @@ The `/focus --loop` feature turns Claude Code into an autonomous task executor w
 - Keep tasks small and specific — "fix auth bug in login.swift" > "fix auth"
 - Each task gets max 3 attempts before being marked as blocked
 - Use `/pause skip` to move past a stuck task
-- The progress chart on the sticky note shows real-time completion
+- The checkboxes on the sticky note update in real-time as tasks complete
 
 ## Manual Installation
 
@@ -478,7 +478,7 @@ If you prefer not to use the GitHub marketplace:
    │   ├── task-completed.sh
    │   └── pre-compact.sh
    └── scripts/
-       └── git-context.sh
+       └── git-context.sh    # Git utilities for hooks
    ```
 3. Add to `~/.claude/settings.json`:
    ```json
