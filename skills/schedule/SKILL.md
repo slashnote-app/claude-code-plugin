@@ -61,8 +61,8 @@ When parsing `at <time>`:
 | Flag | Mode | Description |
 |------|------|-------------|
 | `--plan` | `plan` | Safe: only analysis, no file changes |
-| (default) | `acceptEdits` | Recommended: auto-accept file edits |
-| `--bypass` | `bypassPermissions` | Dangerous: full autopilot, no confirmations |
+| `--edits` | `acceptEdits` | Auto-accept file edits only |
+| (default) | `bypassPermissions` | Full autopilot, all actions permitted |
 
 ## Behavior
 
@@ -77,7 +77,7 @@ When parsing `at <time>`:
    - `note_id`: the note UUID
    - `directory`: working directory
    - `delay_minutes` or `fire_at`: parsed time
-   - `permission_mode`: parsed mode (default: `acceptEdits`)
+   - `permission_mode`: parsed mode (default: `bypassPermissions`)
 6. Confirm with: schedule details, fire time, countdown, permission mode
 
 ### Cancel
@@ -100,7 +100,7 @@ Scheduled Focus Loop:
   Note: <first line of note content>
   Fire at: 18:00 (in 2h 15m)
   Directory: ~/project
-  Permission: acceptEdits
+  Permission: bypassPermissions
 ```
 
 After cancelling:
@@ -112,8 +112,7 @@ Schedule cancelled for note <uuid short>.
 
 - Always verify the note exists before scheduling
 - Default delay is 60 minutes if no time specified
-- Default permission mode is `acceptEdits`
-- Warn user when using `--bypass` (bypassPermissions) — it's dangerous
+- Default permission mode is `bypassPermissions` (full autopilot)
 - Only one schedule per note — setting a new schedule replaces the old one
 - Use `$PWD` as default directory
 - Show the countdown in human-readable format (e.g., "in 2h 15m")
@@ -124,7 +123,7 @@ Schedule cancelled for note <uuid short>.
 ```
 /schedule A550DE30-9B73-4CE5-A138-38F848471329 in 2h
 ```
--> Schedules focus loop for note, fires in 120 minutes with acceptEdits mode
+-> Schedules focus loop for note, fires in 120 minutes with bypassPermissions mode
 
 **Schedule at specific time in safe mode:**
 ```
