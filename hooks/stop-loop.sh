@@ -52,16 +52,28 @@ fi
 
 # --- Safety: max iterations ---
 if [ "$iteration" -ge "$max_iterations" ]; then
-  # Deactivate loop
-  if command -v python3 &>/dev/null; then
-    python3 -c "
+  # Deactivate loop and get task counts
+  task_counts=$(python3 -c "
 import json
 with open('$STATE_FILE', 'r') as f: state = json.load(f)
 state['active'] = False
 state['paused_reason'] = 'max_iterations_reached'
 with open('$STATE_FILE', 'w') as f: json.dump(state, f, indent=2)
-"
+tasks = state.get('tasks', [])
+completed = state.get('completed_tasks', [])
+blocked = state.get('blocked_tasks', [])
+print(f'{len(completed)} {len(blocked)} {len(tasks)}')
+" 2>/dev/null) || task_counts="0 0 0"
+  read tc_completed tc_blocked tc_total <<< "$task_counts"
+
+  # Notify app that schedule is completed
+  if [ -n "$note_id" ]; then
+    curl -s -f --connect-timeout 3 -X POST "$MCP_BASE_URL/notes/$note_id/schedule/complete" \
+      -H "Content-Type: application/json" \
+      -d "{\"tasksCompleted\": $tc_completed, \"tasksBlocked\": $tc_blocked, \"totalTasks\": $tc_total, \"message\": \"Stopped: max iterations ($max_iterations) reached\"}" \
+      2>/dev/null || true
   fi
+
   echo "{\"systemMessage\":\"[SlashNote] Task loop stopped: max iterations ($max_iterations) reached. Use /focus --loop to restart.\"}"
   exit 0
 fi
@@ -104,6 +116,14 @@ state['active'] = False
 state['completed_at'] = '$(date -u +%Y-%m-%dT%H:%M:%SZ)'
 with open('$STATE_FILE', 'w') as f: json.dump(state, f, indent=2)
 "
+
+  # Notify app that schedule is completed
+  if [ -n "$note_id" ]; then
+    curl -s -f --connect-timeout 3 -X POST "$MCP_BASE_URL/notes/$note_id/schedule/complete" \
+      -H "Content-Type: application/json" \
+      -d "{\"tasksCompleted\": $completed_count, \"tasksBlocked\": $blocked_count, \"totalTasks\": $total, \"message\": \"All tasks complete\"}" \
+      2>/dev/null || true
+  fi
 
   echo "{\"systemMessage\":\"[SlashNote] All tasks complete! $completed_count/$total done, $blocked_count blocked.\"}"
   exit 0

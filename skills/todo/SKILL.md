@@ -141,3 +141,10 @@ If all tasks relate to one theme (e.g., all about a feature, all about shopping)
 - Do NOT ask for confirmation or additional details
 - Keep it fast — parse and create immediately
 - Priority is lightweight (visual prefix only) — we're a sticky note, not Todoist
+
+## Schedule Execution
+
+After creating a TODO note, you can schedule automatic execution of all tasks:
+- Use `/schedule <note-uuid> in 2h` to auto-execute tasks later
+- Use `/focus <note-uuid>` to start executing tasks immediately
+- The scheduled loop will open a Terminal and run each task via Claude Code

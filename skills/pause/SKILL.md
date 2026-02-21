@@ -6,6 +6,7 @@ allowed-tools:
   - mcp__slashnote__update_note
   - mcp__slashnote__read_note
   - mcp__slashnote__show_note
+  - mcp__slashnote__complete_schedule
   - Read
   - Write
   - Edit
@@ -74,7 +75,8 @@ This is the recommended way to pause — avoids interrupting work mid-task.
 5. Toggle current task checkbox back to `unchecked` in SlashNote
 6. Cancel any in-progress internal tasks via TaskUpdate
 7. **Show final summary** (see format below)
-8. Do NOT delete state file (preserves progress for potential resume)
+8. Call `mcp__slashnote__complete_schedule` with note_id, task counts, and message (e.g. "Stopped by user")
+9. Do NOT delete state file (preserves progress for potential resume)
 
 ## Progress Summary Format
 
