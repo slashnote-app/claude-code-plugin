@@ -35,6 +35,8 @@ Run, schedule, pause, and manage automated task execution loops with SlashNote a
 /note-loop                               # Resume from existing note
 /note-loop <uuid> --new-session          # Schedule in new session (asks for time)
 /note-loop <uuid> --new-session 2h       # Schedule in new session in 2 hours
+/note-loop <uuid> --new-session --sonnet # Schedule with Sonnet model
+/note-loop <uuid> --new-session --haiku  # New session with Haiku model
 /note-loop list                          # List active loops
 /note-loop cancel <uuid>                 # Cancel a scheduled loop
 /note-loop pause                         # Immediate pause
@@ -53,6 +55,7 @@ Run, schedule, pause, and manage automated task execution loops with SlashNote a
 | UUID pattern (8-4-4-4-12 hex) | Loop from existing note |
 | UUID + `--new-session` | Schedule in new session |
 | UUID + `--new-session <time>` | Schedule with delay |
+| UUID + `--new-session` + `--opus`/`--sonnet`/`--haiku` | Schedule with specific model |
 | `list` | `list_note_loops()` |
 | `cancel <uuid>` | `cancel_note_loop(note_id)` |
 | `pause` | Immediate pause (state file: active=false) |
@@ -119,8 +122,9 @@ Schedule the loop to run in a new Terminal session:
    - `directory`: current working directory
    - `delay_minutes` or `fire_at`: parsed time
    - `permission_mode`: `bypassPermissions` (default), or `plan` / `acceptEdits` if specified
+   - `model`: `opus` (default), `sonnet`, or `haiku` if specified
 4. This creates a **Scheduled** block on the note
-5. Confirm with fire time, countdown, and permission mode
+5. Confirm with fire time, countdown, permission mode, and model
 
 ### Duration Parsing
 
@@ -150,6 +154,14 @@ When parsing `at <time>`:
 | `--plan` | `plan` | Safe: only analysis, no file changes |
 | `--edits` | `acceptEdits` | Auto-accept file edits only |
 | (default) | `bypassPermissions` | Full autopilot, all actions permitted |
+
+### Model Selection
+
+| Flag | Model | Description |
+|------|-------|-------------|
+| `--opus` | `opus` | Most capable (default) |
+| `--sonnet` | `sonnet` | Balanced |
+| `--haiku` | `haiku` | Fast, lightweight |
 
 ## Mode: Resume (No Arguments)
 
@@ -344,6 +356,7 @@ Resume: /note-loop
 - State file path: `.claude/slashnote-loop.local.md` relative to cwd
 - Never modify the state file format -- hooks depend on it
 - Default permission mode for new sessions: `bypassPermissions`
+- Default model for new sessions: `opus`
 - Only one schedule per note -- setting a new one replaces the old
 - Use `$PWD` as default directory
 
@@ -366,6 +379,18 @@ Resume: /note-loop
 /note-loop A550DE30-9B73-4CE5-A138-38F848471329 --new-session 2h
 ```
 -> Scheduled block on note, fires in 2 hours with bypassPermissions
+
+**Schedule with specific model:**
+```
+/note-loop A550DE30-9B73-4CE5-A138-38F848471329 --new-session 2h --sonnet
+```
+-> Scheduled block with Sonnet model, fires in 2 hours
+
+**New session (immediate, with model):**
+```
+/note-loop A550DE30-9B73-4CE5-A138-38F848471329 --new-session --haiku --edits
+```
+-> Launches immediately in new Terminal with Haiku + acceptEdits
 
 **Resume:**
 ```

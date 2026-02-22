@@ -47,8 +47,8 @@ If a task item contains urgency markers, note them inline:
 
 | Marker | Meaning | Format |
 |--------|---------|--------|
-| `!` at end or "urgent" | High priority | Prepend item with `(!)` |
-| `!!` at end or "asap", "critical" | Critical | Prepend item with `(!!)` |
+| Single excl. mark at end, or word "urgent" | High priority | Prepend item with `(!)` |
+| Double excl. mark at end, or "asap", "critical" | Critical | Prepend item with `(!!)` |
 | "today", "now" | Time-sensitive | Prepend item with `(today)` |
 | "tomorrow" | Next-day | Prepend item with `(tomorrow)` |
 
@@ -106,7 +106,7 @@ If all tasks relate to one theme (e.g., all about a feature, all about shopping)
 - [ ] Write tests
 ```
 
-**Input:** `/todo fix auth crash !!, update error messages, add retry logic !`
+**Input:** `/todo fix auth crash ASAP, update error messages, add retry logic urgent`
 **Result:** Peach note with priorities:
 ```
 # Auth TODO
