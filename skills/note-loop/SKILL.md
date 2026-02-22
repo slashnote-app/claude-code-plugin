@@ -11,7 +11,6 @@ allowed-tools:
   - mcp__slashnote__show_note
   - mcp__slashnote__reorder_checkboxes
   - mcp__slashnote__start_note_loop
-  - mcp__slashnote__update_note_loop
   - mcp__slashnote__complete_note_loop
   - mcp__slashnote__cancel_note_loop
   - mcp__slashnote__list_note_loops
@@ -88,7 +87,7 @@ Start a loop immediately in the current Claude Code session.
 1. Call `mcp__slashnote__start_note_loop` with:
    - `note_id`: the note UUID
    - `directory`: current working directory
-   - No time parameters (current session mode)
+   - `current_session`: **true** (shows Running block immediately, no Terminal)
 2. This creates a **Running** block on the note
 
 ### Step 3: State file + execute
@@ -104,7 +103,7 @@ Use an existing SlashNote as the task list:
 3. Skip already completed (`- [x]`) and in-progress (`- [/]`) items
 4. If note has no unchecked checkboxes -> inform user, do not start loop
 5. Show the note via `mcp__slashnote__show_note`
-6. Call `mcp__slashnote__start_note_loop` with `note_id` and `directory` (no time)
+6. Call `mcp__slashnote__start_note_loop` with `note_id`, `directory`, and `current_session: true`
 7. Proceed to "Loop Setup"
 
 **Note:** When using an existing note, do NOT change its color or content. Use it as-is.
