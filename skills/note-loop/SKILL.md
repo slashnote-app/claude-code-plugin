@@ -33,7 +33,7 @@ Run, schedule, pause, and manage automated task execution loops with SlashNote a
 /note-loop Task1, Task2, Task3           # Loop in current session (new tasks)
 /note-loop <uuid>                        # Loop from existing note
 /note-loop                               # Resume from existing note
-/note-loop <uuid> --new-session          # Schedule in new session (asks for time)
+/note-loop <uuid> --new-session          # New session (shows scheduling menu if no time)
 /note-loop <uuid> --new-session 2h       # Schedule in new session in 2 hours
 /note-loop <uuid> --new-session --sonnet # Schedule with Sonnet model
 /note-loop <uuid> --new-session --haiku  # New session with Haiku model
@@ -53,8 +53,8 @@ Run, schedule, pause, and manage automated task execution loops with SlashNote a
 |-------|--------|
 | Text with tasks | Create note + loop in current session |
 | UUID pattern (8-4-4-4-12 hex) | Loop from existing note |
-| UUID + `--new-session` | Schedule in new session |
-| UUID + `--new-session <time>` | Schedule with delay |
+| UUID + `--new-session` | New session — shows scheduling menu |
+| UUID + `--new-session <time>` | New session with specified delay (no menu) |
 | UUID + `--new-session` + `--opus`/`--sonnet`/`--haiku` | Schedule with specific model |
 | `list` | `list_note_loops()` |
 | `cancel <uuid>` | `cancel_note_loop(note_id)` |
@@ -115,7 +115,9 @@ Use an existing SlashNote as the task list:
 
 Schedule the loop to run in a new Terminal session:
 
-1. Parse delay from input (e.g., `2h`, `30m`, `at 18:00`). If `--new-session` without time, ask user.
+1. Parse delay from input (e.g., `2h`, `30m`, `at 18:00`).
+   - **If time IS specified** (e.g., `--new-session 2h`): use parsed delay, skip to step 2.
+   - **If NO time specified** (just `--new-session`): show the **Scheduling Menu** (see below).
 2. Read the note to verify it exists and has tasks
 3. Call `mcp__slashnote__start_note_loop` with:
    - `note_id`: the note UUID
@@ -125,6 +127,36 @@ Schedule the loop to run in a new Terminal session:
    - `model`: `opus` (default), `sonnet`, or `haiku` if specified
 4. This creates a **Scheduled** block on the note
 5. Confirm with fire time, countdown, permission mode, and model
+
+### Scheduling Menu
+
+When `--new-session` is used without a specific time, present a menu using `AskUserQuestion`:
+
+- **question**: "When should the loop start in the new Terminal session?"
+- **header**: "Schedule"
+- **multiSelect**: false
+- **options**:
+
+| # | label | description |
+|---|-------|-------------|
+| 1 | Run now (Recommended) | Opens a new Terminal and starts the loop immediately |
+| 2 | In 1 minute | Short delay to verify the setup before it runs |
+| 3 | In 30 minutes | Finish current work first |
+| 4 | In 2 hours | Schedule for later |
+
+The user can also select **Other** (built-in) to type a custom delay (e.g., `1h`, `45m`, `at 18:00`).
+
+**Mapping to parameters:**
+
+| Selection | Parameter |
+|-----------|-----------|
+| Run now | omit `delay_minutes` and `fire_at` |
+| In 1 minute | `delay_minutes: 1` |
+| In 30 minutes | `delay_minutes: 30` |
+| In 2 hours | `delay_minutes: 120` |
+| Other (custom) | Parse using Duration Parsing / Time Parsing rules below |
+
+After user selects, continue with step 2 (read the note).
 
 ### Duration Parsing
 
@@ -391,6 +423,13 @@ Resume: /note-loop
 /note-loop A550DE30-9B73-4CE5-A138-38F848471329 --new-session --haiku --edits
 ```
 -> Launches immediately in new Terminal with Haiku + acceptEdits
+
+**New session (no time — scheduling menu):**
+```
+/note-loop A550DE30-9B73-4CE5-A138-38F848471329 --new-session --sonnet
+```
+-> Shows scheduling menu: "Run now (Recommended)", "In 1 minute", "In 30 minutes", "In 2 hours"
+-> User picks "Run now" -> launches immediately in new Terminal with Sonnet + bypassPermissions
 
 **Resume:**
 ```
