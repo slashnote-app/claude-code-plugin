@@ -45,7 +45,7 @@ For `--week`: use `--since="1 week ago"` and `HEAD~20`
    - Recently completed items (done checkboxes)
    - In-progress items
    - Bug notes (pink)
-3. Check focus note for current task
+3. Check note-loop note for current task
 4. Check loop state file for blocked tasks
 
 ### Step 2: Generate standup
@@ -66,7 +66,7 @@ Create or update a **green** note (update if Step 0 found an existing one for to
 - <open PRs>
 
 ## Today
-- <unchecked focus/todo items — what's planned next>
+- <unchecked note-loop/todo items — what's planned next>
 
 ## Blockers
 - <blocked tasks>
@@ -90,11 +90,11 @@ Right below the title, one line of activity metrics:
 #### "In Progress" Section
 - In-progress checkboxes from notes
 - Open/draft PRs: `PR: "Title" (open, N reviews)`
-- Current focus task
+- Current note-loop task
 - Max 7 items
 
 #### "Today" Section
-- Source from unchecked checkboxes in focus/todo notes
+- Source from unchecked checkboxes in note-loop/todo notes
 - This is the **plan**, not history
 - If no planned items → omit section
 - Max 5 items
@@ -119,7 +119,7 @@ When git is not available or `--notes` flag used:
 - <in-progress items from notes>
 
 ## Today
-- <unchecked items from focus/todo notes>
+- <unchecked items from note-loop/todo notes>
 ```
 
 - No git/PR calls at all

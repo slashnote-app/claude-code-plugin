@@ -2,7 +2,7 @@
 
 > Your coding companion: capture ideas, track tasks, run standups — all from the terminal.
 
-SlashNote plugin adds 12 slash commands and 4 automatic hooks to Claude Code, turning [SlashNote](https://slashnote.app) sticky notes into your developer dashboard.
+SlashNote plugin adds 11 slash commands and 4 automatic hooks to Claude Code, turning [SlashNote](https://slashnote.app) sticky notes into your developer dashboard.
 
 ```
 You: /note fix the auth token refresh before release
@@ -38,8 +38,7 @@ Then add `"slashnote@local": true` to `~/.claude/settings.json` under `enabledPl
 | `/meeting <notes>` | Capture | blue | Meeting notes with decisions + action items |
 | `/snippet <code>` | Capture | purple | Code snippet with language detection |
 | `/decide <desc>` | Capture | green | Architectural decision record (Y-statement ADR) |
-| `/focus <tasks>` | Workflow | green | Pinned focus note, optional auto-execute loop |
-| `/pause` | Workflow | — | Pause, skip, or stop task loop |
+| `/note-loop <tasks>` | Workflow | green | Task execution loop — run, schedule, pause, stop |
 | `/find <query>` | Workflow | — | Search across all notes with ranking |
 | `/standup` | Reporting | green | Daily standup from git + notes + PRs |
 | `/wrapup` | Reporting | green | Session summary with handoff notes |
@@ -184,51 +183,45 @@ Creates a **green** note. Checks for duplicate decisions before creating.
 
 ### Workflow
 
-#### `/focus <task>` or `/focus Task1, Task2, Task3 --loop`
+#### `/note-loop`
 
-Set your current focus or start an automated task execution loop.
+Task execution loop — run, schedule, pause, skip, stop, and manage automated task loops.
 
-**Simple focus:**
+**Start a loop with new tasks:**
 ```
-/focus implement user authentication
-/focus fix navbar, add dark mode, update tests
-```
-
-Creates/updates a **green pinned** note with your task(s) as checkboxes.
-
-**Auto-execute loop:**
-```
-/focus fix login bug, add rate limiting, write API tests --loop
+/note-loop fix login bug, add rate limiting, write API tests
 ```
 
-Starts sequential task execution:
-1. Creates focus note with checkboxes for each task
-2. Creates Claude Code tasks for each item
-3. Executes tasks one by one, updating checkboxes in real time
-4. Blocks session exit until all tasks are done (or you `/pause stop`)
+Creates a green pinned note with checkboxes, starts sequential execution immediately.
 
-**Resume from existing note:**
+**Loop from existing note:**
 ```
-/focus --loop              # Resume from focus note checkboxes
-/focus <note-id> --loop    # Resume from specific note by UUID
+/note-loop <note-uuid>
 ```
 
-Safety: `max_iterations = max(30, tasks × 3)`. Blocked tasks tracked with reasons.
+**Schedule for later (new Terminal session):**
+```
+/note-loop <note-uuid> --new-session 2h
+```
 
----
+**Resume a paused loop:**
+```
+/note-loop
+```
 
-#### `/pause` / `/pause after` / `/pause skip` / `/pause stop`
-
-Control the task execution loop.
+**Control the loop:**
 
 | Command | Effect |
 |---------|--------|
-| `/pause` | Immediate pause — resume later with `/focus --loop` |
-| `/pause after` | Graceful pause — finish current task, then stop |
-| `/pause skip <reason>` | Skip current task with reason, move to next |
-| `/pause stop <reason>` | Stop loop entirely, cancel remaining tasks |
+| `/note-loop pause` | Immediate pause — resume later with `/note-loop` |
+| `/note-loop pause after` | Graceful pause — finish current task, then stop |
+| `/note-loop skip <reason>` | Skip current task with reason, move to next |
+| `/note-loop stop <reason>` | Stop loop entirely, cancel remaining tasks |
+| `/note-loop list` | List all active/scheduled loops |
+| `/note-loop cancel <uuid>` | Cancel a scheduled loop |
 
-Progress report on every pause: `✓ Done · ⊘ Blocked · → Current (N% complete)`
+Safety: `max_iterations = max(30, tasks × 3)`. Blocked tasks tracked with reasons.
+Progress report on every pause/stop: `✓ Done · ⊘ Blocked · → Current (N% complete)`
 
 ---
 
@@ -341,7 +334,7 @@ Implementing JWT validation in auth middleware
 ## State
 - Branch: adding JWT authentication
 - 2 staged, 1 modified, 0 untracked
-- Focus loop: 5/8 tasks done
+- /note-loop: 5/8 tasks done
 
 ## Open Questions
 - Should refresh tokens use separate storage?
@@ -362,7 +355,7 @@ The plugin includes 4 automatic hooks that run without manual invocation:
 |------|---------|--------------|
 | **SessionStart** | New Claude Code session | Injects git context + checks for pending tasks |
 | **Stop** | Session end | Continues task loop if tasks remain |
-| **TaskCompleted** | Any task completion | Auto-checks matching checkbox in focus note |
+| **TaskCompleted** | Any task completion | Auto-checks matching checkbox in note-loop note |
 | **PreCompact** | Before context compression | Saves session snapshot to a blue note |
 
 Hooks communicate with SlashNote via its HTTP bridge (localhost:51423) and require no configuration.
@@ -392,15 +385,15 @@ The plugin works out of the box. All configuration is optional.
 
 ## Task Loop Guide
 
-The `/focus --loop` feature turns Claude Code into an autonomous task executor with SlashNote as the visual dashboard.
+The `/note-loop` command turns Claude Code into an autonomous task executor with SlashNote as the visual dashboard.
 
 ### How it works
 
 ```
 ┌─────────────────────────────────────────────┐
-│  /focus task1, task2, task3 --loop           │
+│  /note-loop task1, task2, task3             │
 │                                             │
-│  1. Creates focus note with checkboxes      │
+│  1. Creates note-loop note with checkboxes   │
 │  2. Creates Claude Code tasks               │
 │  3. Starts executing task1                  │
 │                                             │
@@ -424,19 +417,19 @@ The `/focus --loop` feature turns Claude Code into an autonomous task executor w
 
 1. **Start the loop:**
    ```
-   /focus fix auth bug, add rate limiting, write tests --loop
+   /note-loop fix auth bug, add rate limiting, write tests
    ```
 
 2. **Watch progress** on the sticky note — checkboxes update in real time.
 
 3. **Pause if needed:**
-   - `/pause` — pause and resume later
-   - `/pause skip` — skip a stuck task
-   - `/pause stop` — cancel everything
+   - `/note-loop pause` — pause and resume later
+   - `/note-loop skip` — skip a stuck task
+   - `/note-loop stop` — cancel everything
 
 4. **Resume a paused loop:**
    ```
-   /focus --loop
+   /note-loop
    ```
 
 5. **Loop ends** when all tasks are complete or stopped.
@@ -445,7 +438,7 @@ The `/focus --loop` feature turns Claude Code into an autonomous task executor w
 
 - Keep tasks small and specific — "fix auth bug in login.swift" > "fix auth"
 - Each task gets max 3 attempts before being marked as blocked
-- Use `/pause skip` to move past a stuck task
+- Use `/note-loop skip` to move past a stuck task
 - The checkboxes on the sticky note update in real-time as tasks complete
 
 ## Manual Installation
@@ -465,8 +458,7 @@ If you prefer not to use the GitHub marketplace:
    │   ├── meeting/SKILL.md
    │   ├── snippet/SKILL.md
    │   ├── decide/SKILL.md
-   │   ├── focus/SKILL.md
-   │   ├── pause/SKILL.md
+   │   ├── note-loop/SKILL.md
    │   ├── find/SKILL.md
    │   ├── standup/SKILL.md
    │   ├── wrapup/SKILL.md
@@ -517,7 +509,7 @@ Then remove `"slashnote@local": true` from `~/.claude/settings.json`.
 
 **Task loop doesn't continue:**
 - Check `.claude/slashnote-loop.local.md` exists and contains valid JSON
-- Resume with `/focus --loop`
+- Resume with `/note-loop`
 - Reset loop state: delete `.claude/slashnote-loop.local.md` and start fresh
 
 **Hooks not firing:**

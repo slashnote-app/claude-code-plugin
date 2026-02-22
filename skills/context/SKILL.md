@@ -40,7 +40,7 @@ echo "PROJECT:$(basename $(git rev-parse --show-toplevel 2>/dev/null || pwd))" &
 ### Step 2: Collect SlashNote state
 
 1. `mcp__slashnote__list_notes` — overview
-2. Read focus note (if exists) → current tasks
+2. Read note-loop note (if exists) → current tasks
 3. Read loop state file (if exists) → loop progress
 
 ### Step 3: Create or update context note
@@ -55,7 +55,7 @@ echo "PROJECT:$(basename $(git rev-parse --show-toplevel 2>/dev/null || pwd))" &
 **<project>** @ `<branch>` | <N> uncommitted changes
 
 ## Working On
-<current task from focus/loop, or inferred from conversation>
+<current task from note-loop, or inferred from conversation>
 
 ## Key Files
 - `path/to/file.swift` — <what's being changed, 5 words max>
@@ -64,7 +64,7 @@ echo "PROJECT:$(basename $(git rev-parse --show-toplevel 2>/dev/null || pwd))" &
 ## State
 - <branch purpose: "Adding X", "Fixing Y">
 - <uncommitted changes: "N staged, M modified, K untracked">
-- <loop progress: "Focus loop: N/M tasks done">
+- <loop progress: "/note-loop: N/M tasks done">
 
 ## Key Decisions
 - <important decisions from this session>
@@ -84,7 +84,7 @@ echo "PROJECT:$(basename $(git rev-parse --show-toplevel 2>/dev/null || pwd))" &
 - If no uncommitted changes → `| clean`
 
 ### "Working On"
-- If focus loop active → current task name + progress (N/M)
+- If note-loop active → current task name + progress (N/M)
 - If no loop → infer from conversation (what was being discussed/coded)
 - Keep to 1-2 lines
 - Be specific: "Improving /context skill in SlashNote plugin" not "Working on stuff"
@@ -119,8 +119,8 @@ THE most critical section. Must be specific enough for a fresh Claude Code sessi
 Quality bar: a new session reading ONLY this line should know exactly what to do next.
 
 Good:
-- "Continue editing `skills/focus/SKILL.md` — adding note ID support"
-- "Run `/focus --loop` on note `3CEB5A5B` to continue skills roadmap"
+- "Continue editing `skills/note-loop/SKILL.md` — adding note ID support"
+- "Run `/note-loop 3CEB5A5B` to continue skills roadmap"
 - "`git diff` shows 3 modified files — review changes, then commit"
 - "Read `auth.swift:45-80`, fix the JWT expiry check, then run tests"
 

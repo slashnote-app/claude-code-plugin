@@ -58,7 +58,7 @@ Search existing SlashNote notes and surface relevant ones.
 /find --type snippet    # Purple notes (code)
 /find --type meeting    # Blue notes with meeting patterns
 /find --type decision   # Green notes with decision patterns
-/find --type focus      # Green notes with "Focus" heading
+/find --type note-loop  # Green notes with "/note-loop" heading
 /find --type context    # Blue notes with "Context" heading
 ```
 
@@ -73,7 +73,7 @@ Search existing SlashNote notes and surface relevant ones.
 | `snippet` | purple | has code blocks |
 | `meeting` | blue | has "Key Points" or "Action Items" |
 | `decision` | green | has "Decision:" or "Over:" |
-| `focus` | green | has "Focus" heading |
+| `note-loop` | green | has "/note-loop" heading |
 | `context` | blue | has "Context" heading |
 
 3. Display matching notes as summary table
@@ -113,7 +113,7 @@ Display results as a compact summary:
 ```
 Found N notes:
 
-1. 📌 [green] Focus — 3/5 tasks done
+1. 📌 [green] /note-loop — 3/5 tasks done
 2. [pink] Bug: Login crash — Feb 18
 3. [blue] Sprint Planning — 2 action items
 4. [purple] JWT validation — 15 lines Swift
@@ -132,7 +132,7 @@ Showing #1. Say "show 2" to open another.
 | Code (purple) | `<title> — N lines <language>` |
 | Meeting (blue) | `<title> — N action items` |
 | Decision (green) | `<title> — <decision one-liner>` |
-| Focus (green) | `<title> — N/M tasks done` |
+| /note-loop (green) | `<title> — N/M tasks done` |
 | Context (blue) | `<title> — <date>` |
 | Other | `<title> — <first 8 words>...` |
 

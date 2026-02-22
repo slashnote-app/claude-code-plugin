@@ -19,9 +19,9 @@ stats=$(curl -s -f --connect-timeout 2 "$MCP_BASE_URL/stats" 2>/dev/null) || tru
 if [ -n "$stats" ]; then
   total_notes=$(echo "$stats" | grep -o '"totalNotes":[0-9]*' | grep -o '[0-9]*' || echo "0")
   if [ "$total_notes" -gt 0 ]; then
-    # Search for focus notes with unchecked items
-    focus_search=$(curl -s -f --connect-timeout 2 "$MCP_BASE_URL/notes/search?q=Focus&limit=1" 2>/dev/null) || true
-    if [ -n "$focus_search" ]; then
+    # Search for note-loop notes with unchecked items
+    loop_search=$(curl -s -f --connect-timeout 2 "$MCP_BASE_URL/notes/search?q=note-loop&limit=1" 2>/dev/null) || true
+    if [ -n "$loop_search" ]; then
       pending_info=" | SlashNote: $total_notes notes"
     fi
   fi
@@ -33,7 +33,7 @@ loop_info=""
 if [ -f "$STATE_FILE" ]; then
   active=$(grep '^"active":' "$STATE_FILE" 2>/dev/null | grep -o 'true\|false' || echo "false")
   if [ "$active" = "true" ]; then
-    loop_info=" | Task loop ACTIVE (use /pause to stop)"
+    loop_info=" | Task loop ACTIVE (use /note-loop pause to stop)"
   fi
 fi
 

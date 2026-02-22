@@ -1,7 +1,7 @@
 #!/bin/bash
 # Stop hook — task execution loop controller
 # If loop active: block exit and return next task instructions
-# If loop inactive: check focus note for reminders (non-blocking)
+# If loop inactive: check note-loop note for reminders (non-blocking)
 set -euo pipefail
 
 MCP_BASE_URL="${MCP_BASE_URL:-http://127.0.0.1:51423}"
@@ -20,14 +20,14 @@ state_get_array() {
 
 # --- No state file → exit normally ---
 if [ ! -f "$STATE_FILE" ]; then
-  # Check for focus note with pending items (non-blocking reminder)
-  focus_search=$(curl -s -f --connect-timeout 2 "$MCP_BASE_URL/notes/search?q=Focus&limit=1" 2>/dev/null) || true
-  if [ -n "$focus_search" ] && echo "$focus_search" | grep -q '"checkboxStats"'; then
-    total=$(echo "$focus_search" | grep -o '"total":[0-9]*' | head -1 | grep -o '[0-9]*' || echo "0")
-    done_count=$(echo "$focus_search" | grep -o '"done":[0-9]*' | head -1 | grep -o '[0-9]*' || echo "0")
+  # Check for note-loop note with pending items (non-blocking reminder)
+  loop_search=$(curl -s -f --connect-timeout 2 "$MCP_BASE_URL/notes/search?q=note-loop&limit=1" 2>/dev/null) || true
+  if [ -n "$loop_search" ] && echo "$loop_search" | grep -q '"checkboxStats"'; then
+    total=$(echo "$loop_search" | grep -o '"total":[0-9]*' | head -1 | grep -o '[0-9]*' || echo "0")
+    done_count=$(echo "$loop_search" | grep -o '"done":[0-9]*' | head -1 | grep -o '[0-9]*' || echo "0")
     if [ "$total" -gt 0 ] && [ "$done_count" -lt "$total" ]; then
       remaining=$((total - done_count))
-      echo "{\"systemMessage\":\"[SlashNote] Reminder: $remaining pending tasks in Focus note\"}"
+      echo "{\"systemMessage\":\"[SlashNote] Reminder: $remaining pending tasks in /note-loop note\"}"
     fi
   fi
   exit 0
@@ -68,13 +68,13 @@ print(f'{len(completed)} {len(blocked)} {len(tasks)}')
 
   # Notify app that schedule is completed
   if [ -n "$note_id" ]; then
-    curl -s -f --connect-timeout 3 -X POST "$MCP_BASE_URL/notes/$note_id/schedule/complete" \
+    curl -s -f --connect-timeout 3 -X POST "$MCP_BASE_URL/notes/$note_id/note-loop/complete" \
       -H "Content-Type: application/json" \
       -d "{\"tasksCompleted\": $tc_completed, \"tasksBlocked\": $tc_blocked, \"totalTasks\": $tc_total, \"message\": \"Stopped: max iterations ($max_iterations) reached\"}" \
       2>/dev/null || true
   fi
 
-  echo "{\"systemMessage\":\"[SlashNote] Task loop stopped: max iterations ($max_iterations) reached. Use /focus --loop to restart.\"}"
+  echo "{\"systemMessage\":\"[SlashNote] Task loop stopped: max iterations ($max_iterations) reached. Use /note-loop to restart.\"}"
   exit 0
 fi
 
@@ -119,7 +119,7 @@ with open('$STATE_FILE', 'w') as f: json.dump(state, f, indent=2)
 
   # Notify app that schedule is completed
   if [ -n "$note_id" ]; then
-    curl -s -f --connect-timeout 3 -X POST "$MCP_BASE_URL/notes/$note_id/schedule/complete" \
+    curl -s -f --connect-timeout 3 -X POST "$MCP_BASE_URL/notes/$note_id/note-loop/complete" \
       -H "Content-Type: application/json" \
       -d "{\"tasksCompleted\": $completed_count, \"tasksBlocked\": $blocked_count, \"totalTasks\": $total, \"message\": \"All tasks complete\"}" \
       2>/dev/null || true
@@ -153,5 +153,5 @@ fi
 
 # Block exit with next task instruction
 cat <<EOF
-{"decision":"block","reason":"[SlashNote Loop] Task $((task_index + 1))/$((task_index + remaining)): $task_text\n\nExecute this task now. When done, mark it complete with TaskUpdate. $remaining tasks remaining.\nTo pause: /pause | To skip: /pause skip | To stop: /pause stop"}
+{"decision":"block","reason":"[SlashNote Loop] Task $((task_index + 1))/$((task_index + remaining)): $task_text\n\nExecute this task now. When done, mark it complete with TaskUpdate. $remaining tasks remaining.\nTo pause: /note-loop pause | To skip: /note-loop skip | To stop: /note-loop stop"}
 EOF

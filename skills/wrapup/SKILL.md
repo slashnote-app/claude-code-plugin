@@ -41,7 +41,7 @@ echo "LOG:" && git log --oneline -10 2>/dev/null && echo "---DIFF---" && git dif
 
 **SlashNote data** (always collected):
 1. `mcp__slashnote__list_notes` — overview of all notes
-2. Read focus note if exists → task progress
+2. Read note-loop note if exists → task progress
 3. Read loop state file if exists → blocked/remaining tasks
 4. Read recent decision notes (green) → decisions made this session
 5. Read recent bug notes (pink) → known issues
@@ -61,7 +61,7 @@ echo "LOG:" && git log --oneline -10 2>/dev/null && echo "---DIFF---" && git dif
 
 ## Done
 - <completed work — from git commits + note checkboxes>
-- <loop progress if applicable: "Focus loop: N/M tasks">
+- <loop progress if applicable: "/note-loop: N/M tasks">
 
 ## Decisions
 - <decisions made this session — from /decide notes>
@@ -93,7 +93,7 @@ echo "LOG:" && git log --oneline -10 2>/dev/null && echo "---DIFF---" && git dif
 
 ## Open
 - <in-progress items from notes>
-- <unchecked focus items>
+- <unchecked note-loop items>
 
 ## Next
 - <specific next steps based on remaining work>
@@ -111,7 +111,7 @@ echo "LOG:" && git log --oneline -10 2>/dev/null && echo "---DIFF---" && git dif
 ### "Done" — What was accomplished
 - Group related commits (same pattern as /standup)
 - Include completed checkbox items from notes
-- Include loop progress: "Focus loop: 9/12 tasks completed"
+- Include loop progress: "/note-loop: 9/12 tasks completed"
 - This is a record — only things actually done
 
 ### "Decisions" — Choices made this session
@@ -164,7 +164,7 @@ Cross-reference data sources for richer summary:
 | `git diff` ↔ Open tasks | Modified files show WIP areas |
 | Decision notes ↔ Commits | Decisions that were already implemented |
 | Bug notes ↔ Open items | Known issues that block next steps |
-| Loop state ↔ Focus note | Accurate progress tracking |
+| Loop state ↔ /note-loop note | Accurate progress tracking |
 | Staged vs unstaged | What's ready to commit vs still WIP |
 
 ## Rules
