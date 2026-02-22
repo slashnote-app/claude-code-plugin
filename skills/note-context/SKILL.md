@@ -1,5 +1,5 @@
 ---
-name: context
+name: note-context
 description: Save current session context to a SlashNote for handoff to next session
 allowed-tools:
   - mcp__slashnote__create_note
@@ -11,15 +11,15 @@ allowed-tools:
   - Read
 ---
 
-# /context — Session Context Save
+# /note-context — Session Context Save
 
 Save a snapshot of the current working context to a SlashNote. Designed for preserving state across Claude Code sessions — when context is about to be lost (compaction, session end, context switch).
 
 ## Usage
 
 ```
-/context                      # Auto-capture full context
-/context <additional notes>   # Auto-capture + user notes
+/note-context                      # Auto-capture full context
+/note-context <additional notes>   # Auto-capture + user notes
 ```
 
 ## Behavior
@@ -87,7 +87,7 @@ echo "PROJECT:$(basename $(git rev-parse --show-toplevel 2>/dev/null || pwd))" &
 - If note-loop active → current task name + progress (N/M)
 - If no loop → infer from conversation (what was being discussed/coded)
 - Keep to 1-2 lines
-- Be specific: "Improving /context skill in SlashNote plugin" not "Working on stuff"
+- Be specific: "Improving /note-context skill in SlashNote plugin" not "Working on stuff"
 
 ### "Key Files"
 - **NEW section** — list the 3-5 most important files being worked on

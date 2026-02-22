@@ -1,5 +1,5 @@
 ---
-name: snippet
+name: note-snippet
 description: Save a code snippet to a SlashNote sticky note with context
 allowed-tools:
   - mcp__slashnote__create_note
@@ -7,27 +7,27 @@ allowed-tools:
   - Read
 ---
 
-# /snippet — Code Snippet
+# /note-snippet — Code Snippet
 
 Save a code snippet to a purple SlashNote sticky note with optional annotation.
 
 ## Usage
 
 ```
-/snippet <file_path:lines>                # Extract from file
-/snippet <file_path:lines> -- <why>       # Extract with annotation
-/snippet <inline code>                    # Save code directly
-/snippet <inline code> -- <why>           # Inline with annotation
+/note-snippet <file_path:lines>                # Extract from file
+/note-snippet <file_path:lines> -- <why>       # Extract with annotation
+/note-snippet <inline code>                    # Save code directly
+/note-snippet <inline code> -- <why>           # Inline with annotation
 ```
 
 ## Two Modes
 
 ### Mode 1: File reference
 ```
-/snippet src/auth.swift:10-25
-/snippet src/utils.ts:42
-/snippet Services/AI/AIServiceManager.swift
-/snippet Core/NoteManager.swift:15-30 -- CRUD pattern to reuse in new module
+/note-snippet src/auth.swift:10-25
+/note-snippet src/utils.ts:42
+/note-snippet Services/AI/AIServiceManager.swift
+/note-snippet Core/NoteManager.swift:15-30 -- CRUD pattern to reuse in new module
 ```
 - Read the file at the given path using the `Read` tool
 - Extract the specified line range (or single line ± 5 lines of context)
@@ -36,8 +36,8 @@ Save a code snippet to a purple SlashNote sticky note with optional annotation.
 
 ### Mode 2: Inline code
 ```
-/snippet func validate(token: String) -> Bool { return token.count > 0 }
-/snippet const debounce = (fn, ms) => { ... } -- useful utility
+/note-snippet func validate(token: String) -> Bool { return token.count > 0 }
+/note-snippet const debounce = (fn, ms) => { ... } -- useful utility
 ```
 - User provides code directly in the input
 - Detect language from syntax patterns
@@ -53,9 +53,9 @@ If input contains ` -- ` (double dash with spaces), everything after it is an an
 
 | Input | Code Part | Annotation |
 |-------|-----------|------------|
-| `/snippet auth.swift:10-25 -- JWT validation pattern` | `auth.swift:10-25` | "JWT validation pattern" |
-| `/snippet const x = 1 -- example` | `const x = 1` | "example" |
-| `/snippet auth.swift:10-25` | `auth.swift:10-25` | (none) |
+| `/note-snippet auth.swift:10-25 -- JWT validation pattern` | `auth.swift:10-25` | "JWT validation pattern" |
+| `/note-snippet const x = 1 -- example` | `const x = 1` | "example" |
+| `/note-snippet auth.swift:10-25` | `auth.swift:10-25` | (none) |
 
 Annotation appears as italic text below the code block.
 
@@ -157,7 +157,7 @@ When no file extension available, detect from syntax:
 
 ## Examples
 
-**Input:** `/snippet Core/NoteManager.swift:15-30`
+**Input:** `/note-snippet Core/NoteManager.swift:15-30`
 **Result:**
 ```markdown
 # NoteManager CRUD operations
@@ -171,7 +171,7 @@ func createNote(preset: NotePreset) -> Note {
 `Core/NoteManager.swift:15-30` · Feb 19, 2026
 ```
 
-**Input:** `/snippet const debounce = (fn, ms) => { let timer; return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); }; }`
+**Input:** `/note-snippet const debounce = (fn, ms) => { let timer; return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); }; }`
 **Result:**
 ```markdown
 # Debounce utility
@@ -189,7 +189,7 @@ const debounce = (fn, ms) => {
 Feb 19, 2026
 ```
 
-**Input:** `/snippet auth.swift:42-60 -- JWT validation pattern to reuse in API module`
+**Input:** `/note-snippet auth.swift:42-60 -- JWT validation pattern to reuse in API module`
 **Result:**
 ```markdown
 # JWT token validation

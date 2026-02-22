@@ -1,5 +1,5 @@
 ---
-name: bug
+name: note-bug
 description: Log a structured bug report with git context and recent diff
 allowed-tools:
   - mcp__slashnote__create_note
@@ -7,14 +7,14 @@ allowed-tools:
   - Bash
 ---
 
-# /bug — Bug Report
+# /note-bug — Bug Report
 
 Create a structured bug report in a SlashNote sticky note with git context.
 
 ## Usage
 
 ```
-/bug <description>
+/note-bug <description>
 ```
 
 ## Behavior
@@ -83,7 +83,7 @@ Infer severity from the description — do not ask the user:
 
 ## Examples
 
-**Input:** `/bug Login crashes on Safari when clicking submit`
+**Input:** `/note-bug Login crashes on Safari when clicking submit`
 **Result:**
 ```markdown
 # Bug: Login crashes on Safari submit
@@ -106,7 +106,7 @@ Recent changes: 3 files changed (AuthController.swift, LoginView.swift, +1 more)
 **Actual:** Page crashes on submit
 ```
 
-**Input:** `/bug race condition in websocket`
+**Input:** `/note-bug race condition in websocket`
 **Result:**
 ```markdown
 # Bug: Race condition in WebSocket handler

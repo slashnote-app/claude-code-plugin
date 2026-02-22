@@ -33,16 +33,16 @@ Then add `"slashnote@local": true` to `~/.claude/settings.json` under `enabledPl
 | Command | Category | Color | What it creates |
 |---------|----------|-------|-----------------|
 | `/note <text>` | Capture | auto | Auto-typed sticky note (confidence scoring) |
-| `/todo <tasks>` | Capture | peach | Task list with priorities and deadlines |
-| `/bug <desc>` | Capture | pink | Structured bug report with severity + git context |
-| `/meeting <notes>` | Capture | blue | Meeting notes with decisions + action items |
-| `/snippet <code>` | Capture | purple | Code snippet with language detection |
-| `/decide <desc>` | Capture | green | Architectural decision record (Y-statement ADR) |
+| `/note-todo <tasks>` | Capture | peach | Task list with priorities and deadlines |
+| `/note-bug <desc>` | Capture | pink | Structured bug report with severity + git context |
+| `/note-meeting <notes>` | Capture | blue | Meeting notes with decisions + action items |
+| `/note-snippet <code>` | Capture | purple | Code snippet with language detection |
+| `/note-decide <desc>` | Capture | green | Architectural decision record (Y-statement ADR) |
 | `/note-loop <tasks>` | Workflow | green | Task execution loop — run, schedule, pause, stop |
-| `/find <query>` | Workflow | — | Search across all notes with ranking |
-| `/standup` | Reporting | green | Daily standup from git + notes + PRs |
-| `/wrapup` | Reporting | green | Session summary with handoff notes |
-| `/context` | Reporting | blue | Context snapshot for session continuity |
+| `/note-find <query>` | Workflow | — | Search across all notes with ranking |
+| `/note-standup` | Reporting | green | Daily standup from git + notes + PRs |
+| `/note-wrapup` | Reporting | green | Session summary with handoff notes |
+| `/note-context` | Reporting | blue | Context snapshot for session continuity |
 
 ## Skills Reference
 
@@ -76,15 +76,15 @@ Notes longer than 20 words get an auto-generated title.
 
 ---
 
-#### `/todo <tasks>`
+#### `/note-todo <tasks>`
 
 Smart task list with priority detection and time markers.
 
 ```
-/todo Write tests, Update API docs, Deploy staging
-/todo !Fix production crash ASAP
-/todo !!Critical security patch needed today
-/todo --append Add one more task to the latest list
+/note-todo Write tests, Update API docs, Deploy staging
+/note-todo !Fix production crash ASAP
+/note-todo !!Critical security patch needed today
+/note-todo --append Add one more task to the latest list
 ```
 
 | Feature | Syntax |
@@ -98,14 +98,14 @@ Creates a **peach** note with checkboxes and auto-generated context-aware title.
 
 ---
 
-#### `/bug <description>`
+#### `/note-bug <description>`
 
 Structured bug report with severity inference and git context.
 
 ```
-/bug Login page crashes when password field is empty
-/bug API returns 500 on malformed JSON — breaks checkout flow
-/bug Wrong color on hover state in dark mode
+/note-bug Login page crashes when password field is empty
+/note-bug API returns 500 on malformed JSON — breaks checkout flow
+/note-bug Wrong color on hover state in dark mode
 ```
 
 **Severity auto-detection:**
@@ -121,13 +121,13 @@ Creates a **pink** note: Title, Summary, Steps to Reproduce, Expected/Actual, Se
 
 ---
 
-#### `/meeting <notes>`
+#### `/note-meeting <notes>`
 
 Meeting notes with automatic decision and action item extraction.
 
 ```
-/meeting Sync with team: decided to deploy Friday, @Alex update changelog by Wednesday
-/meeting Retro — agreed on 2-week sprints, @Sara owns migration plan, need to explore caching options
+/note-meeting Sync with team: decided to deploy Friday, @Alex update changelog by Wednesday
+/note-meeting Retro — agreed on 2-week sprints, @Sara owns migration plan, need to explore caching options
 ```
 
 **Smart extraction:**
@@ -139,14 +139,14 @@ Creates a **blue** note: `## Date` heading, Decisions, Action Items (`@Owner: ta
 
 ---
 
-#### `/snippet <code or file:lines>`
+#### `/note-snippet <code or file:lines>`
 
 Save a code snippet with language detection and optional annotation.
 
 ```
-/snippet src/auth.swift:10-25
-/snippet const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms) } }
-/snippet func validate(token: String) -> Bool { ... } -- JWT validation helper
+/note-snippet src/auth.swift:10-25
+/note-snippet const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms) } }
+/note-snippet func validate(token: String) -> Bool { ... } -- JWT validation helper
 ```
 
 **Two modes:**
@@ -159,13 +159,13 @@ Creates a **purple** note: auto-generated title, syntax-highlighted code block, 
 
 ---
 
-#### `/decide <description>`
+#### `/note-decide <description>`
 
 Architectural decision record using Y-statement format.
 
 ```
-/decide Use JWT instead of sessions for API authentication
-/decide Chose PostgreSQL over MongoDB for the user service — need relational queries
+/note-decide Use JWT instead of sessions for API authentication
+/note-decide Chose PostgreSQL over MongoDB for the user service — need relational queries
 ```
 
 **Compact format** (default):
@@ -225,20 +225,20 @@ Progress report on every pause/stop: `✓ Done · ⊘ Blocked · → Current (N%
 
 ---
 
-#### `/find <query>`
+#### `/note-find <query>`
 
 Search across all notes with relevance ranking.
 
 ```
-/find authentication
-/find --type bug
-/find JWT --type decide --pinned
+/note-find authentication
+/note-find --type note-bug
+/note-find JWT --type note-decide --pinned
 ```
 
 | Flag | Effect |
 |------|--------|
 | `<query>` | Full-text search across note content |
-| `--type <type>` | Filter by type: `todo`, `bug`, `meeting`, `snippet`, `decide` |
+| `--type <type>` | Filter by type: `note-todo`, `note-bug`, `note-meeting`, `note-snippet`, `note-decide` |
 | `--pinned` | Only show pinned notes |
 
 Flags are combinable. Ranking: pinned first → recency → content match.
@@ -249,14 +249,14 @@ If nothing found → suggests broadening the query → offers to create a new no
 
 ### Reporting
 
-#### `/standup` or `/standup --week` or `/standup --notes`
+#### `/note-standup` or `/note-standup --week` or `/note-standup --notes`
 
 Generate a daily standup summary from git, notes, and PRs.
 
 ```
-/standup                  # Git + notes since yesterday
-/standup --week           # Weekly summary
-/standup --notes          # Notes-only mode (no git required)
+/note-standup                  # Git + notes since yesterday
+/note-standup --week           # Weekly summary
+/note-standup --notes          # Notes-only mode (no git required)
 ```
 
 Creates a **green** note:
@@ -284,20 +284,20 @@ Related commits are grouped by conventional commit prefix. Recommended max items
 
 ---
 
-#### `/wrapup` or `/wrapup --notes`
+#### `/note-wrapup` or `/note-wrapup --notes`
 
 End-of-session summary with handoff notes.
 
 ```
-/wrapup
-/wrapup --notes
-/wrapup spent most of the session debugging the WebSocket reconnection
+/note-wrapup
+/note-wrapup --notes
+/note-wrapup spent most of the session debugging the WebSocket reconnection
 ```
 
 Creates a **green** note with cross-reference analysis (git ↔ notes ↔ conversation):
 
 - **Done:** completed work from git commits + note checkboxes
-- **Decisions:** from `/decide` notes created this session
+- **Decisions:** from `/note-decide` notes created this session
 - **Changed:** files modified (`git diff --stat`, staged + unstaged)
 - **Open:** unfinished tasks, open bugs, uncommitted changes
 - **Risks:** uncommitted changes, blocked tasks, failing tests
@@ -307,13 +307,13 @@ The "Next" section is the key handoff — each item answers: "What file, what fu
 
 ---
 
-#### `/context`
+#### `/note-context`
 
 Save a snapshot of current session state for seamless handoff between Claude Code sessions.
 
 ```
-/context
-/context also need to check the WebSocket reconnection logic
+/note-context
+/note-context also need to check the WebSocket reconnection logic
 ```
 
 Creates a **blue pinned** note:
@@ -453,16 +453,16 @@ If you prefer not to use the GitHub marketplace:
    │   └── plugin.json
    ├── skills/
    │   ├── note/SKILL.md
-   │   ├── todo/SKILL.md
-   │   ├── bug/SKILL.md
-   │   ├── meeting/SKILL.md
-   │   ├── snippet/SKILL.md
-   │   ├── decide/SKILL.md
+   │   ├── note-bug/SKILL.md
+   │   ├── note-context/SKILL.md
+   │   ├── note-decide/SKILL.md
+   │   ├── note-find/SKILL.md
    │   ├── note-loop/SKILL.md
-   │   ├── find/SKILL.md
-   │   ├── standup/SKILL.md
-   │   ├── wrapup/SKILL.md
-   │   └── context/SKILL.md
+   │   ├── note-meeting/SKILL.md
+   │   ├── note-snippet/SKILL.md
+   │   ├── note-standup/SKILL.md
+   │   ├── note-todo/SKILL.md
+   │   └── note-wrapup/SKILL.md
    ├── hooks/
    │   ├── hooks.json
    │   ├── session-start.sh

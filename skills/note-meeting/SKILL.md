@@ -1,5 +1,5 @@
 ---
-name: meeting
+name: note-meeting
 description: Capture meeting notes — attendees, decisions, action items with owners
 allowed-tools:
   - mcp__slashnote__create_note
@@ -7,14 +7,14 @@ allowed-tools:
   - mcp__slashnote__search_notes
 ---
 
-# /meeting — Meeting Notes
+# /note-meeting — Meeting Notes
 
 Capture meeting notes with structured format: topic, decisions, and action items with owners.
 
 ## Usage
 
 ```
-/meeting <topic or raw notes>
+/note-meeting <topic or raw notes>
 ```
 
 ## Behavior
@@ -103,7 +103,7 @@ If user provides a stream-of-consciousness dump:
 - Discard filler words and organize into clean format
 
 ### From topic-only input
-If user provides just a meeting topic (e.g., `/meeting Sprint planning`):
+If user provides just a meeting topic (e.g., `/note-meeting Sprint planning`):
 - Create the note with the topic as title
 - Add placeholder sections:
   ```markdown
@@ -137,7 +137,7 @@ Detect names from the input:
 
 ## Examples
 
-**Input:** `/meeting Sprint planning — discussed auth refactor, decided to use JWT, need to update API docs by Friday, Maria will handle frontend`
+**Input:** `/note-meeting Sprint planning — discussed auth refactor, decided to use JWT, need to update API docs by Friday, Maria will handle frontend`
 **Result:**
 ```markdown
 # Sprint Planning
@@ -156,7 +156,7 @@ Detect names from the input:
 ## Feb 19, 2026
 ```
 
-**Input:** `/meeting 1:1 with Alex`
+**Input:** `/note-meeting 1:1 with Alex`
 **Result:**
 ```markdown
 # 1:1 with Alex
@@ -171,7 +171,7 @@ Detect names from the input:
 ## Feb 19, 2026
 ```
 
-**Input:** `/meeting We talked about the new pricing page, John suggested A/B testing, we agreed to go with tiered pricing, Sarah needs to deliver designs by Friday, also discussed the analytics bug — decided to deprioritize it`
+**Input:** `/note-meeting We talked about the new pricing page, John suggested A/B testing, we agreed to go with tiered pricing, Sarah needs to deliver designs by Friday, also discussed the analytics bug — decided to deprioritize it`
 **Result:**
 ```markdown
 # Pricing Page Discussion
@@ -193,7 +193,7 @@ Detect names from the input:
 ## Feb 19, 2026
 ```
 
-**Input:** `/meeting Quick sync about deployment — we'll deploy Monday morning, Alex will run migrations first, then Sarah deploys the API, I need to update the status page ASAP`
+**Input:** `/note-meeting Quick sync about deployment — we'll deploy Monday morning, Alex will run migrations first, then Sarah deploys the API, I need to update the status page ASAP`
 **Result:**
 ```markdown
 # Deployment Sync

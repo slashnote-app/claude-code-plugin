@@ -1,5 +1,5 @@
 ---
-name: decide
+name: note-decide
 description: Log a technical decision (ADR-lite) with context and consequences
 allowed-tools:
   - mcp__slashnote__create_note
@@ -7,14 +7,14 @@ allowed-tools:
   - mcp__slashnote__search_notes
 ---
 
-# /decide — Decision Logger
+# /note-decide — Decision Logger
 
 Log technical and architectural decisions as lightweight ADR (Architecture Decision Records).
 
 ## Usage
 
 ```
-/decide <what was decided and why>
+/note-decide <what was decided and why>
 ```
 
 ## Behavior
@@ -120,7 +120,7 @@ If search finds a related previous decision note:
 
 ## Examples
 
-**Input:** `/decide Use WebSockets instead of SSE for real-time updates`
+**Input:** `/note-decide Use WebSockets instead of SSE for real-time updates`
 **Result:**
 ```markdown
 # Use WebSockets for real-time updates
@@ -134,7 +134,7 @@ If search finds a related previous decision note:
 Feb 19, 2026
 ```
 
-**Input:** `/decide Store sessions in Redis with 24h TTL because we need shared state across instances and fast lookups. Considered Postgres but too slow for session checks, and in-memory won't work with multiple pods.`
+**Input:** `/note-decide Store sessions in Redis with 24h TTL because we need shared state across instances and fast lookups. Considered Postgres but too slow for session checks, and in-memory won't work with multiple pods.`
 **Result (extended):**
 ```markdown
 # Use Redis for session storage
@@ -159,7 +159,7 @@ Need to add Redis to deployment. Sessions are ephemeral (24h); users re-authenti
 Feb 19, 2026
 ```
 
-**Input:** `/decide Use Swift concurrency over Combine`
+**Input:** `/note-decide Use Swift concurrency over Combine`
 **Result:**
 ```markdown
 # Use Swift concurrency over Combine
@@ -173,7 +173,7 @@ Feb 19, 2026
 Feb 19, 2026
 ```
 
-**Input:** `/decide Switch from REST to GraphQL for the mobile API` (and search finds previous "Use REST for API" note)
+**Input:** `/note-decide Switch from REST to GraphQL for the mobile API` (and search finds previous "Use REST for API" note)
 **Result:**
 ```markdown
 # Switch to GraphQL for mobile API

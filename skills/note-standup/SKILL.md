@@ -1,5 +1,5 @@
 ---
-name: standup
+name: note-standup
 description: Generate a daily standup summary from git activity, notes, and PRs
 allowed-tools:
   - mcp__slashnote__create_note
@@ -10,16 +10,16 @@ allowed-tools:
   - Bash
 ---
 
-# /standup — Daily Standup
+# /note-standup — Daily Standup
 
 Generate a standup report from git commits, SlashNote notes, and PR activity.
 
 ## Usage
 
 ```
-/standup                  # Default: since yesterday
-/standup --week           # Weekly summary
-/standup --notes          # Notes-only mode (no git required)
+/note-standup                  # Default: since yesterday
+/note-standup --week           # Weekly summary
+/note-standup --notes          # Notes-only mode (no git required)
 ```
 
 ## Behavior
@@ -66,7 +66,7 @@ Create or update a **green** note (update if Step 0 found an existing one for to
 - <open PRs>
 
 ## Today
-- <unchecked note-loop/todo items — what's planned next>
+- <unchecked note-loop/note-todo items — what's planned next>
 
 ## Blockers
 - <blocked tasks>
@@ -94,7 +94,7 @@ Right below the title, one line of activity metrics:
 - Max 7 items
 
 #### "Today" Section
-- Source from unchecked checkboxes in note-loop/todo notes
+- Source from unchecked checkboxes in note-loop/note-todo notes
 - This is the **plan**, not history
 - If no planned items → omit section
 - Max 5 items
@@ -119,7 +119,7 @@ When git is not available or `--notes` flag used:
 - <in-progress items from notes>
 
 ## Today
-- <unchecked items from note-loop/todo notes>
+- <unchecked items from note-loop/note-todo notes>
 ```
 
 - No git/PR calls at all
@@ -170,8 +170,8 @@ Example: 3 commits with `feat:` prefix → single line: "Features: animated AI l
 - PR: "Refactor NoteStorage" (open, 2 reviews)
 
 ## Today
-- Finish /standup improvements
-- Start /wrapup deep dive
+- Finish /note-standup improvements
+- Start /note-wrapup deep dive
 - Review open PR feedback
 
 ## Blockers
@@ -185,14 +185,14 @@ Example: 3 commits with `feat:` prefix → single line: "Features: animated AI l
 
 ## Done
 - Improved /note auto-detection
-- Created /context skill
-- Improved /find search UX
+- Created /note-context skill
+- Improved /note-find search UX
 
 ## In Progress
-- /standup deep dive
+- /note-standup deep dive
 - Plugin integration tests
 
 ## Today
-- Finish /wrapup improvements
-- Start /context deep dive
+- Finish /note-wrapup improvements
+- Start /note-context deep dive
 ```

@@ -1,5 +1,5 @@
 ---
-name: todo
+name: note-todo
 description: Create a TODO checklist — quick task list capture with smart parsing
 allowed-tools:
   - mcp__slashnote__create_note
@@ -10,15 +10,15 @@ allowed-tools:
   - mcp__slashnote__reorder_checkboxes
 ---
 
-# /todo — Quick TODO List
+# /note-todo — Quick TODO List
 
 Create a TODO checklist note or append tasks to an existing one. Inspired by Todoist's zero-friction capture.
 
 ## Usage
 
 ```
-/todo <tasks>                    # Create new TODO note
-/todo <tasks> --append           # Append to existing TODO note (most recent peach note)
+/note-todo <tasks>                    # Create new TODO note
+/note-todo <tasks> --append           # Append to existing TODO note (most recent peach note)
 ```
 
 ## Parsing Rules
@@ -90,7 +90,7 @@ If all tasks relate to one theme (e.g., all about a feature, all about shopping)
 
 ## Examples
 
-**Input:** `/todo buy milk, review PR, deploy staging`
+**Input:** `/note-todo buy milk, review PR, deploy staging`
 **Result:** Peach note:
 ```
 - [ ] Buy milk
@@ -98,7 +98,7 @@ If all tasks relate to one theme (e.g., all about a feature, all about shopping)
 - [ ] Deploy staging
 ```
 
-**Input:** `/todo fix the login bug and update the docs and write tests`
+**Input:** `/note-todo fix the login bug and update the docs and write tests`
 **Result:** Peach note (smart split on "and"):
 ```
 - [ ] Fix the login bug
@@ -106,7 +106,7 @@ If all tasks relate to one theme (e.g., all about a feature, all about shopping)
 - [ ] Write tests
 ```
 
-**Input:** `/todo fix auth crash ASAP, update error messages, add retry logic urgent`
+**Input:** `/note-todo fix auth crash ASAP, update error messages, add retry logic urgent`
 **Result:** Peach note with priorities:
 ```
 # Auth TODO
@@ -116,13 +116,13 @@ If all tasks relate to one theme (e.g., all about a feature, all about shopping)
 - [ ] (!) Add retry logic
 ```
 
-**Input:** `/todo Review auth PR`
+**Input:** `/note-todo Review auth PR`
 **Result:** Peach note:
 ```
 - [ ] Review auth PR
 ```
 
-**Input:** `/todo add error handling, write tests --append`
+**Input:** `/note-todo add error handling, write tests --append`
 **Result:** Appends to most recent peach TODO note
 
 ## Formatting

@@ -1,5 +1,5 @@
 ---
-name: wrapup
+name: note-wrapup
 description: Generate a session summary with handoff notes for next session
 allowed-tools:
   - mcp__slashnote__create_note
@@ -11,16 +11,16 @@ allowed-tools:
   - Read
 ---
 
-# /wrapup — Session Summary
+# /note-wrapup — Session Summary
 
 Generate an end-of-session summary with handoff notes.
 
 ## Usage
 
 ```
-/wrapup                       # Full analysis (git + notes + conversation)
-/wrapup --notes               # Notes-only mode (no git required)
-/wrapup <additional context>  # Add extra context to the summary
+/note-wrapup                       # Full analysis (git + notes + conversation)
+/note-wrapup --notes               # Notes-only mode (no git required)
+/note-wrapup <additional context>  # Add extra context to the summary
 ```
 
 ## Behavior
@@ -64,7 +64,7 @@ echo "LOG:" && git log --oneline -10 2>/dev/null && echo "---DIFF---" && git dif
 - <loop progress if applicable: "/note-loop: N/M tasks">
 
 ## Decisions
-- <decisions made this session — from /decide notes>
+- <decisions made this session — from /note-decide notes>
 
 ## Changed
 - <file areas modified — from git diff --stat>
@@ -109,7 +109,7 @@ echo "LOG:" && git log --oneline -10 2>/dev/null && echo "---DIFF---" && git dif
 ## Section Details
 
 ### "Done" — What was accomplished
-- Group related commits (same pattern as /standup)
+- Group related commits (same pattern as /note-standup)
 - Include completed checkbox items from notes
 - Include loop progress: "/note-loop: 9/12 tasks completed"
 - This is a record — only things actually done
