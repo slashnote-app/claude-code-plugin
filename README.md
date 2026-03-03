@@ -11,14 +11,21 @@ You: /note fix the auth token refresh before release
 
 ## Quick Install
 
-**Option A — From GitHub (recommended):**
-
 ```bash
+# Step 1: Install the plugin
 claude plugin marketplace add slashnote-app/claude-code-plugin
 claude plugin install slashnote
+
+# Step 2: Connect to SlashNote MCP server
+claude mcp add --transport http slashnote http://localhost:51423/mcp
+
+# Step 3: Restart Claude Code
 ```
 
-**Option B — Manual:**
+> **Requires [SlashNote.app](https://slashnote.app)** running with MCP Server enabled (right-click menu bar icon → Settings → MCP → Enable). See [Prerequisites](#prerequisites).
+
+<details>
+<summary>Manual installation (without marketplace)</summary>
 
 ```bash
 git clone https://github.com/slashnote-app/claude-code-plugin.git ~/.claude/plugins/slashnote
@@ -26,7 +33,7 @@ git clone https://github.com/slashnote-app/claude-code-plugin.git ~/.claude/plug
 
 Then add `"slashnote@local": true` to `~/.claude/settings.json` under `enabledPlugins`.
 
-> Both options require SlashNote.app with MCP server enabled — see [Prerequisites](#prerequisites).
+</details>
 
 ## What It Does
 
