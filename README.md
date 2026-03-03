@@ -12,17 +12,16 @@ You: /note fix the auth token refresh before release
 ## Quick Install
 
 ```bash
-# Step 1: Install the plugin
+# Step 1: Install the plugin (includes MCP server)
 claude plugin marketplace add slashnote-app/claude-code-plugin
 claude plugin install slashnote
 
-# Step 2: Connect to SlashNote MCP server
-claude mcp add --transport http slashnote http://localhost:51423/mcp
-
-# Step 3: Restart Claude Code
+# Step 2: Restart Claude Code
 ```
 
 > **Requires [SlashNote.app](https://slashnote.app)** running with MCP Server enabled (right-click menu bar icon → Settings → MCP → Enable). See [Prerequisites](#prerequisites).
+>
+> The plugin automatically registers the MCP server — no manual `claude mcp add` needed.
 
 <details>
 <summary>Manual installation (without marketplace)</summary>
@@ -373,10 +372,11 @@ Hooks communicate with SlashNote via its HTTP bridge (localhost:51423) and requi
 2. **MCP server enabled** in SlashNote:
    - Click the SlashNote menu bar icon
    - Right-click → Settings → MCP → Enable MCP Server
-3. **MCP server added to Claude Code:**
-   ```bash
-   claude mcp add --transport http slashnote http://localhost:51423/mcp
-   ```
+
+> The plugin's `.mcp.json` automatically registers the MCP server with Claude Code. If you need to add it manually (e.g. without the plugin), run:
+> ```bash
+> claude mcp add --transport http slashnote http://localhost:51423/mcp
+> ```
 
 ## Configuration
 
@@ -470,6 +470,7 @@ If you prefer not to use the GitHub marketplace:
    │   ├── note-standup/SKILL.md
    │   ├── note-todo/SKILL.md
    │   └── note-wrapup/SKILL.md
+   ├── .mcp.json
    ├── hooks/
    │   ├── hooks.json
    │   ├── session-start.sh
@@ -512,7 +513,7 @@ Then remove `"slashnote@local": true` from `~/.claude/settings.json`.
 
 **"MCP server not found" error:**
 - Check SlashNote is running and MCP enabled: `curl -s http://localhost:51423/health`
-- Re-add the MCP server: `claude mcp add --transport http slashnote http://localhost:51423/mcp`
+- The plugin registers the MCP server automatically via `.mcp.json`. If needed, add manually: `claude mcp add --transport http slashnote http://localhost:51423/mcp`
 
 **Task loop doesn't continue:**
 - Check `.claude/slashnote-loop.local.md` exists and contains valid JSON
