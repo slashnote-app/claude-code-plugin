@@ -1,0 +1,6 @@
+{
+  "slashnote": {
+    "type": "http",
+    "url": "http://localhost:51423/mcp"
+  }
+}
