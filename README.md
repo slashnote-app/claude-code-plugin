@@ -368,7 +368,7 @@ Hooks communicate with SlashNote via its HTTP bridge (localhost:51423) and requi
    - Right-click → Settings → MCP → Enable MCP Server
 3. **MCP server added to Claude Code:**
    ```bash
-   claude mcp add slashnote -- /Applications/SlashNote.app/Contents/MacOS/slashnote-mcp
+   claude mcp add --transport http slashnote http://localhost:51423/mcp
    ```
 
 ## Configuration
@@ -504,8 +504,8 @@ Then remove `"slashnote@local": true` from `~/.claude/settings.json`.
 - Test MCP connection: in Claude Code, try asking "list my notes" — the `list_notes` tool should work
 
 **"MCP server not found" error:**
-- Verify the path: `ls /Applications/SlashNote.app/Contents/MacOS/slashnote-mcp`
-- Re-add the MCP server: `claude mcp add slashnote -- /Applications/SlashNote.app/Contents/MacOS/slashnote-mcp`
+- Check SlashNote is running and MCP enabled: `curl -s http://localhost:51423/health`
+- Re-add the MCP server: `claude mcp add --transport http slashnote http://localhost:51423/mcp`
 
 **Task loop doesn't continue:**
 - Check `.claude/slashnote-loop.local.md` exists and contains valid JSON

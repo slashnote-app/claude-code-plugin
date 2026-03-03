@@ -1,7 +1,7 @@
 {
   "name": "slashnote",
   "description": "SlashNote developer companion — quick capture, task loops, standups, and session management via sticky notes",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": {
     "name": "SlashNote"
   },

@@ -1,5 +1,8 @@
 {
-  "slashnote": {
-    "command": "/Applications/SlashNote.app/Contents/MacOS/slashnote-mcp"
+  "mcpServers": {
+    "slashnote": {
+      "type": "http",
+      "url": "http://localhost:51423/mcp"
+    }
   }
 }
