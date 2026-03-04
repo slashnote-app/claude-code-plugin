@@ -10,6 +10,7 @@ allowed-tools:
   - mcp__slashnote__toggle_checkbox
   - mcp__slashnote__show_note
   - mcp__slashnote__reorder_checkboxes
+  - mcp__slashnote__configure_note_loop
   - mcp__slashnote__start_note_loop
   - mcp__slashnote__complete_note_loop
   - mcp__slashnote__cancel_note_loop
@@ -118,15 +119,16 @@ Schedule the loop to run in a new Terminal session:
 1. Parse delay from input (e.g., `2h`, `30m`, `at 18:00`).
    - **If time IS specified** (e.g., `--new-session 2h`): use parsed delay, skip to step 2.
    - **If NO time specified** (just `--new-session`): show the **Scheduling Menu** (see below).
-2. Read the note to verify it exists and has tasks
-3. Call `mcp__slashnote__start_note_loop` with:
+2. Verify working directory (see **Directory Detection** below).
+3. Read the note to verify it exists and has tasks
+4. Call `mcp__slashnote__start_note_loop` with:
    - `note_id`: the note UUID
-   - `directory`: current working directory
+   - `directory`: current working directory (if real path verified)
    - `delay_minutes` or `fire_at`: parsed time
    - `permission_mode`: `bypassPermissions` (default), or `plan` / `acceptEdits` if specified
    - `model`: `opus` (default), `sonnet`, or `haiku` if specified
-4. This creates a **Scheduled** block on the note
-5. Confirm with fire time, countdown, permission mode, and model
+5. This creates a **Scheduled** block on the note
+6. Confirm with fire time, countdown, permission mode, and model
 
 ### Scheduling Menu
 
@@ -380,6 +382,34 @@ Resume: /note-loop
 
 ---
 
+## Directory Detection
+
+Before calling `start_note_loop`, verify the working directory is a real macOS path:
+
+- **Real paths**: `/Users/...`, `/Volumes/...`, `/tmp/...`, `/var/...`
+- **Virtual/invalid**: `/sessions/...`, `/workspace/...`, container paths, paths that don't start with `/`
+
+**If you can determine the real directory** (e.g., from `$PWD` in Claude Code CLI):
+- Pass `directory` to `start_note_loop` as normal.
+
+**If you can't determine the real directory** (e.g., Claude Desktop, virtual FS):
+- Use `mcp__slashnote__configure_note_loop` instead (omit `directory`).
+- Inform the user: "I've configured the loop on the note. Please select your project directory and click Start."
+- The note will show an editable setup panel where the user can Browse for the directory and adjust settings.
+
+## Start Existing Config
+
+When a note already has a schedule (check `read_note` response `schedule` field):
+
+| `schedule.status` | `schedule.directory` | Action |
+|---|---|---|
+| `configured` | Set (non-null) | `start_note_loop(note_id)` — launches with existing settings |
+| `configured` | Not set (null) | Inform user to select directory in the note UI |
+| `scheduled` | — | Note is already scheduled. Inform user of fire time |
+| `running` | — | Loop is already running |
+
+**Key rule:** When starting from existing config, call `start_note_loop(note_id)` with **NO other params** to preserve the user's settings. Only pass parameters you explicitly want to override.
+
 ## Rules
 
 - Always search for existing note-loop note first -- never create duplicates
@@ -390,7 +420,8 @@ Resume: /note-loop
 - Default permission mode for new sessions: `bypassPermissions`
 - Default model for new sessions: `opus`
 - Only one schedule per note -- setting a new one replaces the old
-- Use `$PWD` as default directory
+- Use `$PWD` as default directory (verify it's a real macOS path first — see Directory Detection)
+- When starting from an existing config, don't pass parameters you don't need to override
 
 ## Examples
 
@@ -472,3 +503,15 @@ Resume: /note-loop
 /note-loop stop finished for today
 ```
 -> Stops loop, calls complete_note_loop, shows final summary
+
+**Configure without starting (unknown directory):**
+```
+mcp__slashnote__configure_note_loop(note_id: "<uuid>", model: "sonnet", permission_mode: "acceptEdits")
+```
+-> Note shows setup panel with Sonnet + Accept Edits pre-filled, user selects directory and clicks Start
+
+**Start from existing configuration:**
+```
+mcp__slashnote__start_note_loop(note_id: "<uuid>")
+```
+-> Uses directory, model, and permissions from existing config on the note
